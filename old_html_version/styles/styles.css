@@ -1,0 +1,306 @@
+/*Estilos globales del sitio*/
+body{
+    background-color:  #F8F4EF;
+    color: #3B2E2A;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI',sans-serif;
+    text-align: center;
+}
+
+/*Encabezado principal de navegacion*/
+header{
+    background-color: #DCC9A4;
+    padding: 1rem 2rem;
+    border-bottom: 2px solid #C97B63;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/*Menu de navegacion*/
+nav ul{
+    list-style: none;
+    gap: 2rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/*Estilo de los enlaces del menu*/
+nav ul li a{
+    padding: 0.3rem 0.7rem;
+    border-radius: 10px;
+    color: #3B2E2A;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/*Efecto al pasar el mouse encima*/
+nav ul li a:hover {
+    background-color: #C97B63;
+    color: #FFFDF8;
+    text-decoration: none;
+}
+
+/*Conteedor principal del contenido*/
+main {
+    flex-grow: 1;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+/*Seccion de productos en cuadricula*/
+#vista-productos{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.14rem;
+    padding: 20px;
+    max-width: 1500px;
+    margin: auto;
+    align-items: start;
+    justify-items: stretch;
+}
+
+/*Diseño de tarjetas de productos*/
+.productos-inicio{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #C97B63;
+    background-color: #FFFDF8;
+    border-radius: 10px;
+    overflow:hidden ;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*Enlace ver mas dentro de cada tarjeta */
+.productos-inicio a{
+    border-radius: 10px;
+    color: #3B2E2A;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/*Efecto al pasar el mouse encima del ver mas*/
+.productos-inicio a:hover {
+    background-color: #C97B63;
+    color: #FFFDF8;
+    text-decoration: none;
+}
+
+/*Estilos generales para todas las imagenes*/
+img{
+    max-width: 50%;
+    height: auto;
+    display: block;
+    border-radius: 15px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+/*Efecto en las imagenes*/
+img:hover{
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3)
+}
+
+/*Contenedor de colecciones de los productos en la pagina colecciones*/
+.colecciones-productos{
+    background-color: #FFFDF8;
+    padding: 3px 7px;
+    gap: 1.5rem;
+    background-color: #F8F4EF;
+    border: 1px solid #C97B63;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    display: grid;
+    justify-self: center;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 80%;
+    
+}
+
+/*Tamaño especifico para las imagenes de colecciones*/
+.producto img{
+    width: 100%;
+    max-width: 50%;
+    height: auto;
+    display: block;
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin-bottom: 0.8rem;
+    gap: 2rem;
+    padding: 1rem;
+    border: 1px solid #C97B63;
+    border-radius: 12px;
+    background-color: #fff;
+    object-fit: cover;
+}
+
+/* titulos h3 centrados*/
+.producto h3, p{
+    text-align: center;
+}
+
+/*Seccion de inspiracion con recuadros y sombra*/
+.vista-productos-inspiracion{
+    background-color: #DCC9A4;
+    padding: 50px 20px;
+    border-left: 1px solid #C97B63;
+    border-right: 1px solid #C97B63;
+    border-radius: 10px;
+    margin: 4rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/*Seccion de contacto*/
+#contacto {
+    background: #DCC9A4;
+    padding: 2rem;
+    margin: 3rem auto;
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/*Formulario dentro de contacto*/
+#contacto form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+
+/*Campos de entrada del formulario*/
+#contacto input, 
+#contacto textarea {
+  padding: 0.7rem;
+  border: 1px solid #C97B63;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/*Boton de enviar formulario*/
+#contacto input[type="submit"] {
+    background-color: #DCC9A4;
+    border: 2px solid #C97B63;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/*Efecto del boton enviar del formulario*/
+#contacto input[type="submit"]:hover {
+    background: #C97B63;
+}
+
+/*Titulo animado en contacto*/
+#contacto h2{
+    color: #C97B63;
+    animation: flotar 4s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+}
+
+/*Estilos para la seccion de redes en el pie de pagina*/
+.redes-sociales ul {
+    list-style: none; 
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    padding: 0;
+    margin: 2rem 0;
+    font-weight: bold;
+}
+
+/*Enlaces a las redes sociales*/
+.redes-sociales li a {
+    text-decoration: none;
+    color: #3B2E2A; 
+    font-weight: 800; 
+    transition: color 0.3s ease;
+}
+
+/*Efecto en los enlaces de redes sociales*/
+.redes-sociales li a:hover {
+    color: #C97B63;
+}
+
+/*Pie de pagina*/
+footer {
+    width: 100%;
+    background-color: #DCC9A4;
+    padding:40px 20px;
+    text-align: center;
+    border-bottom: 2px solid #C97B63;
+    font-size: 0.9rem;
+    color: #3B2E2A;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-top: 3rem;
+}
+
+/*Animacion flotante para los titulos*/
+@keyframes flotar {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+}
+
+/*Media query para computadores*/
+@media (max-width: 1024px) {
+    #vista-productos {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/*Media query para tablets*/
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #vista-productos {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .colecciones-productos {
+        width: 95%;
+    }
+}
+
+/*Media query para telefonos*/
+@media (max-width: 480px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #vista-productos {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .colecciones-productos img {
+        padding: 1rem;
+    }
+
+    .redes-sociales ul{
+        flex-direction: column;
+        align-items: center;
+    }
+}

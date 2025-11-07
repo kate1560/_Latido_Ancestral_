@@ -1,0 +1,109 @@
+/*Contenedor de productos en venta: cuadricula de 5 columnas*/
+.compra-productos {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.14rem;
+    padding: 20px;
+    max-width: 1400px;
+    margin: auto;
+    align-items: start;
+    justify-items: stretch;
+    text-align: center;
+}
+
+/*Tarjeta individual de productos en venta*/
+.productos-venta {
+   display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #FFFDF8;
+    border-radius: 10px;
+    overflow:hidden ;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*Efecto sobre tarjeta: eleva ligeramente*/
+.productos-venta:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/*Texto descriptivo dentro de la tarjeta de productos*/
+.productos-venta p{
+    font-family: 'poppins', sans-serif;
+    font-size: 1.1rem;
+    color: #5c3d2e;
+    margin-left: 0.5rem;
+}
+
+/*Enlace dentro de cada tarjeta*/
+.productos-venta a{
+    text-align: center;
+    border-radius: 10px;
+    color: #3B2E2A;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/*Efecto en el enlace*/
+.productos-venta a:hover {
+    background-color: #C97B63;
+    color: #FFFDF8;
+    text-decoration: none;
+}
+
+/*Estilo del precio del producto*/
+.precio{
+    font-size: 1rem;
+    font-weight: bold;
+    color: #7a5e4a;
+    margin-bottom: 1rem;
+}
+
+/*Subtitulo con efecto flotante*/
+.subtitulo{
+    text-align: left;
+    font-size: 0.9rem;
+    animation: flotar 4s ease-in-out infinite;
+} 
+
+/*Media query para computadores*/
+@media (max-width: 1024px) {
+    .compra-productos {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/*Media query para tablets*/
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .compra-productos {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .productos-venta {
+        width: 95%;
+    }
+}
+
+/*Media query para telefonos*/
+@media (max-width: 480px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .compra-productos {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+}

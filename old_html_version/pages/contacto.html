@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+      <!--Metadatos para el navegador y SEO-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda de artesanías colombianas,Compra productos hechos a mano.">
+    <meta name="keywords" content="artesanías, Colombia.">
+    <meta name="sitedomain" content="">
+    <meta name="organization" content="Kateryn Martinez">
+    <meta name="author" content="Kateryn Martinez">
+    <meta name="designer" content="Kateryn Martinez">
+    <meta name="copyright" content="© 2025 KaterynMartinez. All rights reserved">
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="15days">
+    <title>Tienda virtual</title> <!--Titulo de la pagina-->
+     <!--Hoja de estilos externas-->
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <!--Encabezado con titulo y menu de navegacion principal-->
+    <header>
+        <h1>Latido Ancestral</h1>
+
+        <nav> 
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="esencia.html">Nuestra Esencia</a></li>
+                <li><a href="colecciones.html">Colecciones</a></li>
+                <li><a href="inspiracion.html">Inspiación</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!--Contenido principal de la pagina-->
+    <main>
+        <!--Seccion de contacto-->
+        <section id="contacto">
+            <h2>Conecta con Nosotros</h2>
+            
+            <!--Descripcion que conecta con el cliente-->
+            <p>Si alguna pieza tocó tu corazón o deseas saber más sobre nuestras raíces, escríbenos.  
+                En <strong>Latido Ancestral</strong> cada mensaje es un puente hacia lo humano y lo auténtico.
+            </p>
+
+            <!--Formulario de contacto-->
+            <form action="/send" method="post">
+                <label for="nombre"><strong>Nombre</strong></label>
+                <input type="text" id="nombre" required>
+                <label for="email"><strong>Direcciòn de correo</strong></label>
+                <input type="email" id="email" required>
+                <label for="message"><strong>Mensaje</strong></label>
+                <textarea id="message" rows="2" required></textarea>
+                <input id="enviar" type="submit" value="Enviar">
+            </form>
+        </section>
+    </main>
+</body>
+</html>
