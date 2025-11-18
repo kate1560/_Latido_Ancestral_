@@ -37,15 +37,6 @@ yarn-error.log*
 
 # Build files
 *.tsbuildinfo
-tsconfig.tsbuildinfo
-
-# Backend build
-backend/dist/
-backend/node_modules/
-
-# Analytics
-analytics/cache/
-analytics/*.tmp
 
 # Temporary files
 *.tmp
