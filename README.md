@@ -1,106 +1,42 @@
-# Latido Ancestral - Multi-Vendor E-Commerce Platform
+# Online Store - Latido Ancestral
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-blue)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)](https://supabase.com/)
+## Description
 
-## 📖 Overview
+*Latido Ancestral* is an online store specializing in the sale of handmade Colombian handicrafts. Our goal is to promote ancestral culture and tradition through products such as vueltiao hats, hammock chairs, bags, bracelets, clothing and more, made with traditional techniques and natural materials.
 
-**Latido Ancestral** (Ancestral Heartbeat) is a comprehensive multi-vendor e-commerce platform dedicated to promoting and selling authentic handmade Colombian handicrafts. The platform connects artisans and vendors with customers worldwide, offering traditional products such as vueltiao hats, Wayuu mochilas, hammock chairs, jewelry, textiles, and more—all crafted with ancestral techniques and natural materials.
+The site offers a simple and intuitive experience for users to browse collections, learn about the essence of each product and make purchases.
 
-### Key Features
+## Technologies
 
-- 🛍️ **Multi-vendor marketplace** with vendor dashboards and commission tracking
-- 🎨 **Product catalog** with categories, collections, and dynamic filtering
-- 🛒 **Shopping cart & checkout** with coupon support and multiple payment methods
-- ❤️ **Wishlist** for registered users
-- 📦 **Order tracking** and management system
-- 👥 **User authentication** with role-based access (admin, vendor, customer, moderator)
-- 📊 **Analytics dashboard** for vendors and administrators
-- 🌐 **Multi-language support** (Spanish/English)
-- 📱 **Fully responsive** design for all devices
-- 🔒 **Secure authentication** with Supabase Auth
+- **Next.js 16** - React framework for production
+- **TypeScript** - Static typing for JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **React 19** - JavaScript library for interfaces
+- **ESLint** - Linter to maintain clean code
 
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 16** (App Router) - React framework with server-side rendering
-- **React 19** - UI library with latest features
-- **TypeScript 5.9** - Type-safe JavaScript
-- **Tailwind CSS 4** - Utility-first styling
-- **Zustand** - L## 📁 Project Structure
+## Project Structure
 
 ```
-Latido_Ancestral/
-├── src/                        # Frontend application (Next.js)
-│   ├── app/                    # App Router pages and layouts
-│   │   ├── (auth)/            # Authentication pages
-│   │   │   ├── login/
-│   │   │   ├── register/
-│   │   │   └── forgot-password/
-│   │   ├── cart/              # Shopping cart
-│   │   ├── checkout/          # Checkout process
-│   │   ├── collections/       # Product collections
-│   │   │   └── [id]/         # Dynamic category pages
-│   │   ├── dashboard/         # User/vendor/admin dashboards
-│   │   │   ├── admin/
-│   │   │   ├── vendor/
-│   │   │   └── user/
-│   │   ├── products/          # Product pages
-│   │   │   └── [id]/         # Product detail
-│   │   ├── wishlist/          # User wishlist
-│   │   ├── api/               # API routes (backend)
-│   │   │   ├── auth/
-│   │   │   ├── products/
-│   │   │   ├── cart/
-│   │   │   ├── orders/
-│   │   │   └── wishlist/
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── page.tsx           # Homepage
-│   │   └── globals.css        # Global styles
-│   ├── components/            # Reusable React components
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── ProductCard.tsx
-│   │   ├── Cart/
-│   │   └── Dashboard/
-│   ├── lib/                   # Infrastructure code
-│   │   ├── db.ts             # PostgreSQL connection
-│   │   ├── auth.ts           # Auth helpers
-│   │   ├── supabaseClient.ts # Supabase client
-│   │   └── repositories/     # Data access layer
-│   ├── store/                 # Zustand state stores
-│   ├── hooks/                 # Custom React hooks
-│   ├── types/                 # TypeScript type definitions
-│   ├── utils/                 # Utility functions
-│   ├── locales/               # i18n translations
-│   └── middleware.ts          # Next.js middleware
-│
-├── backend/                    # Optional separate backend (Express)
-│   ├── src/
-│   │   ├── index.js
-│   │   ├── routes/
-│   │   ├── controllers/
-│   │   └── middleware/
-│   ├── package.json
-│   └── README.md
-│
-├── database/                   # Database schema and migrations
-│   ├── all.sql                # Complete schema with seed data
-│   ├── powerbi_schema.sql     # Analytics schema
-│   ├── INSTALACION.md         # Setup instructions (Spanish)
-│   ├── db.ts                  # Database utilities
-│   └── migrate.ts             # Migration scripts
-│
-├── analytics/                  # Analytics and reporting
-├── public/                     # Static assets (images, fonts)
-├── .gitignore                 # Git ignore patterns
-├── package.json               # Dependencies and scripts
-├── next.config.ts             # Next.js configuration
-├── tsconfig.json              # TypeScript configuration
-├── tailwind.config.ts         # Tailwind CSS configuration
-└── README.md                  # This file
+src/
+├── app/
+│   ├── layout.tsx          (Main layout)
+│   ├── page.tsx            (Homepage)
+│   ├── globals.css         (Global styles)
+│   ├── essence/            (Our Essence)
+│   ├── collections/        (Collections)
+│   │   └── [id]/          (Dynamic category)
+│   ├── inspiration/        (Inspiration)
+│   ├── contact/            (Contact)
+│   └── products/
+│       └── [id]/          (Product detail)
+├── components/
+│   ├── Header.tsx          (Navigation)
+│   ├── Footer.tsx          (Footer)
+│   └── ProductCard.tsx     (Product card)
+├── data/
+│   └── products.ts         (Product data)
+└── types/
+    └── index.ts            (TypeScript types)
 ```
 
 ## Main Features
@@ -356,152 +292,11 @@ Some ideas that can be added on top of the current implementation:
 - More granular permissions per role.
 - Full RLS adoption using Supabase Auth on both client and server.
 
-## 👥 Team Structure
+## Authors
 
-This project is developed collaboratively by three specialized teams:
+*Kateryn Martinez, Adrian Villegas, Samuel Reyes, and collaborators*
 
-### Database Team (@clevervi)
-**Lead**: Adrian Villegas (adriandariov@gmail.com)
-**Responsibilities**:
-- PostgreSQL database schema design and management
-- Supabase configuration and setup
-- Database migrations and seed data
-- SQL optimization and query performance
-- Data integrity and security policies
 
-**Key Files**: `database/all.sql`, `database/powerbi_schema.sql`, `database/INSTALACION.md`
 
-### Frontend Team (@kate1560)
-**Lead**: Kateryn Martinez (katemartinez1507@gmail.com)
-**Responsibilities**:
-- Next.js application development
-- React components and UI/UX design
-- State management with Zustand
-- Responsive design with Tailwind CSS
-- Client-side routing and navigation
-- Multi-language support (i18n)
 
-**Key Files**: `src/app/`, `src/components/`, `src/store/`, `src/hooks/`, `public/`
-
-### Backend Team (@reyes-coder)
-**Lead**: Samuel Reyes (samuelreyescastro.456@gmail.com)
-**Responsibilities**:
-- Next.js API routes development
-- Authentication and authorization logic
-- Business logic and data validation
-- Integration with Supabase Auth
-- Repository pattern implementation
-- Optional Express.js backend service
-
-**Key Files**: `src/app/api/`, `src/lib/`, `backend/`
-
-## 🌱 Development Workflow
-
-### Branch Strategy
-
-This project uses a feature-branch workflow:
-
-```
-main                    # Production-ready code
-  └─ dev/main           # Integration branch
-      ├─ dev/database   # Database team branch
-      ├─ dev/frontend   # Frontend team branch
-      └─ dev/backend    # Backend team branch
-```
-
-### Contribution Guidelines
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/clevervi/Latido_Ancestral.git
-   cd Latido_Ancestral
-   ```
-
-2. **Work on your team's branch**:
-   ```bash
-   # Database team
-   git checkout dev/database
-   
-   # Frontend team
-   git checkout dev/frontend
-   
-   # Backend team
-   git checkout dev/backend
-   ```
-
-3. **Make your changes** and commit regularly:
-   ```bash
-   git add .
-   git commit -m "feat: descriptive message about your changes"
-   ```
-
-4. **Push to your team's branch**:
-   ```bash
-   git push origin dev/database  # or dev/frontend or dev/backend
-   ```
-
-5. **Create a Pull Request** to `dev/main` for integration
-
-### Commit Message Convention
-
-Use conventional commits for clear history:
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
-
-## 📦 Deployment
-
-### Production Deployment
-
-Recommended platforms:
-- **Frontend**: Vercel, Netlify, or AWS Amplify
-- **Database**: Supabase (managed PostgreSQL)
-- **Backend**: Vercel Serverless Functions or Railway
-
-### Environment Setup
-
-1. Set up environment variables in your deployment platform
-2. Configure Supabase production instance
-3. Run database migrations on production database
-4. Build and deploy the Next.js application
-
-## 📚 Additional Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Supabase Documentation](https://supabase.com/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-
-## 📝 License
-
-This project is proprietary software developed for Latido Ancestral.
-
-## ✉️ Contact & Support
-
-For questions, issues, or contributions:
-- **Project Lead**: Kateryn Martinez (katemartinez1507@gmail.com)
-- **Database Team**: Adrian Villegas (adriandariov@gmail.com)
-- **Backend Team**: Samuel Reyes (samuelreyescastro.456@gmail.com)
-
-## 🚀 Future Enhancements
-
-- [ ] Real payment gateway integration (Stripe, PayPal, Wompi)
-- [ ] Advanced vendor analytics and reporting
-- [ ] Mobile app (React Native)
-- [ ] Social media integration
-- [ ] Advanced product recommendation engine
-- [ ] Multi-currency support
-- [ ] Automated email marketing
-- [ ] Customer reviews and ratings system
-- [ ] Live chat support
-- [ ] Inventory management system
-
----
-
-**Built with ❤️ by the Latido Ancestral Team**
-
-*Preserving Colombian ancestral traditions through technology*
+quiero que en el siguiente paso revisemos ".env.local", y hacer un test
