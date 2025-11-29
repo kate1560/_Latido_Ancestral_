@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getCurrentUser } from '@/lib/auth-storage';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { Tag, Plus, Edit, Trash2, Calendar, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { products } from '@/data/products';
 
 interface Promotion {
   id: number;
@@ -15,12 +17,42 @@ interface Promotion {
   startDate: string;
   endDate: string;
   status: 'active' | 'scheduled' | 'expired';
+  image?: string;
 }
 
+const featuredProducts = products.filter(p => p.featured);
+
 const initialPromotions: Promotion[] = [
-  { id: 1, name: 'Summer Sale', discount: '20%', code: 'SUMMER20', startDate: '2024-06-01', endDate: '2024-08-31', status: 'active' },
-  { id: 2, name: 'New Customer', discount: '15%', code: 'WELCOME15', startDate: '2024-01-01', endDate: '2024-12-31', status: 'active' },
-  { id: 3, name: 'Black Friday', discount: '50%', code: 'BF50', startDate: '2024-11-29', endDate: '2024-11-29', status: 'scheduled' },
+  { 
+    id: 1, 
+    name: 'Summer Sale', 
+    discount: '20%', 
+    code: 'SUMMER20', 
+    startDate: '2024-06-01', 
+    endDate: '2024-08-31', 
+    status: 'active',
+    image: featuredProducts[0]?.image || '/assets/assets11/hamaca.webp'
+  },
+  { 
+    id: 2, 
+    name: 'New Customer', 
+    discount: '15%', 
+    code: 'WELCOME15', 
+    startDate: '2024-01-01', 
+    endDate: '2024-12-31', 
+    status: 'active',
+    image: featuredProducts[1]?.image || '/assets/assets11/mochila.webp'
+  },
+  { 
+    id: 3, 
+    name: 'Black Friday', 
+    discount: '50%', 
+    code: 'BF50', 
+    startDate: '2024-11-29', 
+    endDate: '2024-11-29', 
+    status: 'scheduled',
+    image: featuredProducts[2]?.image || '/assets/assets11/sombrero-vueltiao.webp'
+  },
 ];
 
 export default function PromotionsPage() {
@@ -85,50 +117,63 @@ export default function PromotionsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {promotions.map((promo) => (
-            <div key={promo.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-2">
+            <div key={promo.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
+              {/* Imagen del producto */}
+              {promo.image && (
+                <div className="relative h-80 bg-gray-200">
+                  <Image
+                    src={promo.image}
+                    alt={promo.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <span className={`absolute top-3 right-3 px-3 py-1.5 text-sm font-semibold rounded-full ${
+                    promo.status === 'active' 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-yellow-500 text-white'
+                  }`}>
+                    {promo.status}
+                  </span>
+                </div>
+              )}
+              
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-4">
                   <Tag className="w-5 h-5 text-primary" />
                   <h3 className="font-semibold text-dark dark:text-dark-text">{promo.name}</h3>
                 </div>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  promo.status === 'active' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                }`}>
-                  {promo.status}
-                </span>
-              </div>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Discount:</span>
-                  <span className="text-sm font-semibold text-primary">{promo.discount}</span>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Discount:</span>
+                    <span className="text-sm font-semibold text-primary">{promo.discount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Code:</span>
+                    <code className="text-sm font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{promo.code}</code>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                    {promo.startDate} - {promo.endDate}
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Code:</span>
-                  <code className="text-sm font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{promo.code}</code>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <Calendar className="w-4 h-4" />
-                  {promo.startDate} - {promo.endDate}
-                </div>
-              </div>
 
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => handleEdit(promo)}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-                >
-                  <Edit className="w-4 h-4" />
-                  Edit
-                </button>
-                <button 
-                  onClick={() => handleDelete(promo.id)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => handleEdit(promo)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(promo.id)}
+                    className="flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

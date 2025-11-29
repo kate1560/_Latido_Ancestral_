@@ -35,6 +35,14 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [fetchDashboardData, router]);
 
+  if (!user || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <DashboardHeader 
@@ -52,27 +60,28 @@ export default function DashboardPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <h2 className="text-3xl font-bold mb-2">
-                  Welcome back, {user.firstName || 'User'}! 👋
+                  Hola {user.firstName || 'artesano/a'}, bienvenido al panel.
                 </h2>
-                <p className="text-white/90 text-lg">
-                  Here's what's happening with your store today.
+                <p className="text-white/90 text-lg max-w-2xl">
+                  Aquí puedes ver el rendimiento de <strong className="font-semibold">Ancestral heartbeat</strong>:
+                  ventas, pedidos y el impacto económico que la plataforma genera en las comunidades artesanas.
                 </p>
               </div>
               <div className="flex gap-3">
                 {user.role === 'admin' && (
                   <button 
-                    onClick={() => router.push('/dashboard/reports')}
+                    onClick={() => router.push('/dashboard/analytics')}
                     className="bg-white text-[#8B4513] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-md"
                   >
-                    View Reports
+                    Ver analítica global
                   </button>
                 )}
                 {(user.role === 'admin' || user.role === 'store_manager') && (
                   <button 
                     onClick={() => router.push('/dashboard/products')}
-                    className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors"
+                    className="bg-white/10 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors border border-white/20"
                   >
-                    Add Product
+                    Gestionar catálogo
                   </button>
                 )}
               </div>
@@ -112,7 +121,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Quick Stats Row */}
+        {/* Quick Stats Row - impacto en comunidades */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-dark-surface rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between mb-4">
@@ -124,9 +133,9 @@ export default function DashboardPage() {
                 23%
               </span>
             </div>
-            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Products Sold</h3>
+            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Piezas artesanales vendidas</h3>
             <p className="text-2xl font-bold text-dark dark:text-dark-text">1,234</p>
-            <p className="text-xs text-gray-500 mt-2">+156 from last month</p>
+            <p className="text-xs text-gray-500 mt-2">vs. mes anterior en la plataforma</p>
           </div>
 
           <div className="bg-white dark:bg-dark-surface rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-800">
@@ -139,9 +148,9 @@ export default function DashboardPage() {
                 12%
               </span>
             </div>
-            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Page Views</h3>
-            <p className="text-2xl font-bold text-dark dark:text-dark-text">45,678</p>
-            <p className="text-xs text-gray-500 mt-2">+5,234 from last month</p>
+            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Comunidades activas</h3>
+            <p className="text-2xl font-bold text-dark dark:text-dark-text">8</p>
+            <p className="text-xs text-gray-500 mt-2">Wayuu, Caribe, Andina y otras regiones</p>
           </div>
 
           <div className="bg-white dark:bg-dark-surface rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-800">
@@ -149,14 +158,14 @@ export default function DashboardPage() {
               <div className="p-3 bg-accent/10 rounded-lg">
                 <TrendingUp className="w-6 h-6 text-accent" />
               </div>
-              <span className="text-sm text-red-600 font-semibold flex items-center gap-1">
-                <ArrowDownRight className="w-4 h-4" />
-                3%
+              <span className="text-sm text-green-600 font-semibold flex items-center gap-1">
+                <ArrowUpRight className="w-4 h-4" />
+                18%
               </span>
             </div>
-            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Conversion Rate</h3>
-            <p className="text-2xl font-bold text-dark dark:text-dark-text">3.24%</p>
-            <p className="text-xs text-gray-500 mt-2">-0.09% from last month</p>
+            <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Ingreso promedio por artesano</h3>
+            <p className="text-2xl font-bold text-dark dark:text-dark-text">$1.2M COP</p>
+            <p className="text-xs text-gray-500 mt-2">Estimado frente al periodo previo a la plataforma</p>
           </div>
         </div>
 

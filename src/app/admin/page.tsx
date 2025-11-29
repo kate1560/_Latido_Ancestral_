@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaStore, FaBox, FaShoppingCart, FaUsers } from 'react-icons/fa';
+import { products } from '@/data/products';
+import { useSearchStore } from '@/store/searchStore';
 
 interface Stats {
   vendors: number;
@@ -18,6 +21,16 @@ export default function AdminDashboard() {
     orders: 0,
     users: 0,
   });
+  const { adminSearchTerm } = useSearchStore();
+
+  const allFeaturedProducts = products.filter((p) => p.featured);
+  
+  // Filtrar productos basado en el término de búsqueda
+  const featuredProducts = allFeaturedProducts.filter(product =>
+    product.name.toLowerCase().includes(adminSearchTerm.toLowerCase()) ||
+    product.description.toLowerCase().includes(adminSearchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(adminSearchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     // Fetch stats from API
@@ -64,7 +77,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-12">
         <h2 className="text-2xl font-bold mb-6 text-[#8B4513]">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link 
@@ -89,6 +102,50 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-600">View and process orders</p>
           </Link>
         </div>
+      </div>
+
+      {/* Featured Products */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h2 className="text-2xl font-bold mb-6 text-[#8B4513]">Featured Products</h2>
+        {featuredProducts.length === 0 && adminSearchTerm ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No products found matching "{adminSearchTerm}"</p>
+          </div>
+        ) : featuredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No featured products available</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredProducts.map((product) => (
+            <Link
+              key={product.id}
+              href={`/admin/products/${product.id}`}
+              className="group bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow border-2 border-transparent hover:border-[#D2691E]"
+            >
+              <div className="relative h-48 w-full">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-lg mb-2 text-gray-800 dark:text-white">{product.name}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">{product.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-bold text-[#8B4513]">${product.price}</span>
+                  {product.featured && (
+                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-semibold">Featured</span>
+                  )}
+                </div>
+              </div>
+            </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

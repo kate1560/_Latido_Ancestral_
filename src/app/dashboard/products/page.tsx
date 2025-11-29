@@ -4,28 +4,19 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth-storage';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Package, Plus, Edit, Trash2, Search, Filter, X } from 'lucide-react';
+import { Package, Plus, Edit, Trash2, Search, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   category: string;
   price: number;
   stock: number;
   status: 'active' | 'inactive';
   image: string;
-  managerId?: string;
+  vendorId?: string | null;
 }
-
-// Mock data
-const mockProducts: Product[] = [
-  { id: 1, name: 'Vueltiao Hat', category: 'Hats', price: 45.99, stock: 32, status: 'active', image: '/assets/assets1/hat1.jpg', managerId: '2' },
-  { id: 2, name: 'Wayuu Bag', category: 'Bags', price: 89.99, stock: 18, status: 'active', image: '/assets/assets2/bag1.jpg', managerId: '2' },
-  { id: 3, name: 'Hammock Chair', category: 'Home Decor', price: 129.99, stock: 12, status: 'active', image: '/assets/assets3/hammock1.jpg' },
-  { id: 4, name: 'Ceramic Vase', category: 'Home Decor', price: 34.99, stock: 25, status: 'active', image: '/assets/assets4/vase1.jpg' },
-  { id: 5, name: 'Woven Bracelet', category: 'Jewelry', price: 15.99, stock: 50, status: 'active', image: '/assets/assets5/bracelet1.jpg', managerId: '2' },
-];
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -38,34 +29,72 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      router.push('/login');
-      return;
-    }
-    setUser(currentUser);
+    const load = async () => {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        router.push('/login');
+        return;
+      }
+      setUser(currentUser);
 
-    // Filter products based on role
-    if (currentUser.role === 'store_manager') {
-      // Store manager only sees their own products
-      // Convert both to string for comparison
-      const managerProducts = mockProducts.filter(p => p.managerId === String(currentUser.id));
-      setProducts(managerProducts);
-      setFilteredProducts(managerProducts);
-    } else {
-      // Admin sees all products
-      setProducts(mockProducts);
-      setFilteredProducts(mockProducts);
-    }
+      try {
+        let url = '/api/products';
+
+        if (currentUser.role === 'vendor') {
+          // Obtener la tienda del vendor y filtrar por vendorId
+          const meRes = await fetch('/api/vendors/me');
+          if (!meRes.ok) {
+            toast.error('Error loading vendor info');
+            setProducts([]);
+            setFilteredProducts([]);
+            return;
+          }
+          const meData = await meRes.json();
+          const vendorId = meData.data.id as string;
+          url = `/api/products?vendorId=${encodeURIComponent(vendorId)}`;
+        } else if (currentUser.role !== 'admin') {
+          // Otros roles no tienen acceso al dashboard de productos
+          setProducts([]);
+          setFilteredProducts([]);
+          return;
+        }
+
+        const res = await fetch(url);
+        if (!res.ok) {
+          toast.error('Error loading products');
+          return;
+        }
+        const data = await res.json();
+
+        const mapped: Product[] = (data.data || []).map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category_id || 'Uncategorized',
+          price: parseFloat(p.price),
+          stock: p.stock ?? 0,
+          status: p.is_active ? 'active' : 'inactive',
+          image: '/assets/assets1/hat1.jpg',
+          vendorId: p.vendor_id ?? null,
+        }));
+
+        setProducts(mapped);
+        setFilteredProducts(mapped);
+      } catch (error) {
+        console.error('Error loading products for dashboard:', error);
+        toast.error('Unexpected error loading products');
+      }
+    };
+
+    load();
   }, [router]);
 
   useEffect(() => {
     let filtered = products;
 
     if (searchTerm) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchTerm.toLowerCase())
+        p.category.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -76,95 +105,56 @@ export default function ProductsPage() {
     setFilteredProducts(filtered);
   }, [searchTerm, selectedCategory, products]);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
-      console.log('=== DELETE FUNCTION CALLED ===');
-      console.log('Product ID:', id);
-      console.log('Current user:', user);
-      
       if (!user) {
-        alert('User not authenticated');
         toast.error('User not authenticated');
         return;
       }
 
-      if (user.role !== 'admin' && user.role !== 'store_manager') {
-        alert('You do not have permission to delete products');
+      if (user.role !== 'admin') {
         toast.error('You do not have permission to delete products');
         return;
       }
 
-      // Store manager can only delete their own products
-      if (user.role === 'store_manager') {
-        const product = products.find(p => p.id === id);
-        console.log('Found product:', product);
-        console.log('Comparing:', product?.managerId, 'with', String(user.id));
-        if (product && product.managerId !== String(user.id)) {
-          alert('You can only delete your own products');
-          toast.error('You can only delete your own products');
-          return;
-        }
+      if (!window.confirm('Are you sure you want to delete this product?')) {
+        return;
       }
 
-      if (window.confirm('Are you sure you want to delete this product?')) {
-        console.log('User confirmed deletion');
-        const updatedProducts = products.filter(p => p.id !== id);
-        console.log('Updated products:', updatedProducts);
-        setProducts(updatedProducts);
-        setFilteredProducts(updatedProducts);
-        alert('Product deleted successfully!');
-        toast.success('Product deleted successfully');
-      } else {
-        console.log('User cancelled deletion');
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.error || 'Failed to delete product');
+        return;
       }
+
+      const updatedProducts = products.filter(p => p.id !== id);
+      setProducts(updatedProducts);
+      setFilteredProducts(updatedProducts);
+      toast.success('Product deleted successfully');
     } catch (error) {
       console.error('Error in handleDelete:', error);
-      alert('Error deleting product: ' + error);
+      toast.error('Error deleting product');
     }
   };
 
   const handleEdit = (product: Product) => {
     try {
-      console.log('=== EDIT FUNCTION CALLED ===');
-      console.log('Product:', product);
-      console.log('Current user:', user);
-      
       if (!user) {
-        alert('User not authenticated');
         toast.error('User not authenticated');
         return;
       }
 
-      // Admin can edit any product
-      if (user.role === 'admin') {
-        alert('Opening edit modal for: ' + product.name);
-        toast.success('Opening edit modal for: ' + product.name);
-        setEditingProduct(product);
-        setIsModalOpen(true);
+      if (user.role !== 'admin' && user.role !== 'vendor') {
+        toast.error('You do not have permission to edit products');
         return;
       }
-      
-      // Store manager can only edit their own products
-      if (user.role === 'store_manager') {
-        console.log('Comparing:', product.managerId, 'with', String(user.id));
-        if (product.managerId !== String(user.id)) {
-          alert('You can only edit your own products');
-          toast.error('You can only edit your own products');
-          return;
-        }
-        alert('Opening edit modal for: ' + product.name);
-        toast.success('Opening edit modal for: ' + product.name);
-        setEditingProduct(product);
-        setIsModalOpen(true);
-        return;
-      }
-      
-      // Other roles cannot edit
-      alert('You do not have permission to edit products');
-      toast.error('You do not have permission to edit products');
+
+      setEditingProduct(product);
+      setIsModalOpen(true);
     } catch (error) {
       console.error('Error in handleEdit:', error);
-      alert('Error editing product: ' + error);
+      toast.error('Error editing product');
     }
   };
 
@@ -178,7 +168,7 @@ export default function ProductsPage() {
     );
   }
 
-  const canCreate = user.role === 'admin' || user.role === 'store_manager';
+  const canCreate = user.role === 'admin' || user.role === 'vendor';
   const canDelete = user.role === 'admin';
 
   return (
@@ -267,7 +257,6 @@ export default function ProductsPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
-                      console.log('Edit button clicked');
                       handleEdit(product);
                     }}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
@@ -276,12 +265,9 @@ export default function ProductsPage() {
                     Edit
                   </button>
                   
-                  {(user.role === 'admin' || (user.role === 'store_manager' && product.managerId === String(user.id))) && (
+                  {user.role === 'admin' && (
                     <button
-                      onClick={() => {
-                        console.log('Delete button clicked');
-                        handleDelete(product.id);
-                      }}
+                      onClick={() => handleDelete(product.id)}
                       className="flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -328,39 +314,82 @@ export default function ProductsPage() {
                 </button>
               </div>
 
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const productData = {
-                  id: editingProduct?.id || Date.now(),
-                  name: formData.get('name') as string,
-                  category: formData.get('category') as string,
-                  price: parseFloat(formData.get('price') as string),
-                  stock: parseInt(formData.get('stock') as string),
-                  status: formData.get('status') as 'active' | 'inactive',
-                  image: '/assets/assets1/hat1.jpg',
-                  managerId: user?.role === 'store_manager' ? String(user.id) : editingProduct?.managerId
-                };
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!user) {
+                    toast.error('User not authenticated');
+                    return;
+                  }
 
-                if (editingProduct) {
-                  // Update existing product
-                  const updatedProducts = products.map(p => 
-                    p.id === editingProduct.id ? { ...p, ...productData } : p
-                  );
-                  setProducts(updatedProducts);
-                  setFilteredProducts(updatedProducts);
-                  toast.success('Product updated successfully');
-                } else {
-                  // Add new product
-                  const newProducts = [...products, productData as Product];
-                  setProducts(newProducts);
-                  setFilteredProducts(newProducts);
-                  toast.success('Product added successfully');
-                }
+                  const formData = new FormData(e.currentTarget);
+                  const name = formData.get('name') as string;
+                  const categoryLabel = (formData.get('category') as string) || 'Uncategorized';
+                  const price = parseFloat(formData.get('price') as string);
+                  const stock = parseInt(formData.get('stock') as string, 10);
+                  const status = formData.get('status') as 'active' | 'inactive';
 
-                setIsModalOpen(false);
-                setEditingProduct(null);
-              }}>
+                  if (!name || Number.isNaN(price) || Number.isNaN(stock)) {
+                    toast.error('Please fill all required fields correctly');
+                    return;
+                  }
+
+                  try {
+                    // De momento, usamos una descripción generada a partir del nombre
+                    const description = `${name} - ${categoryLabel}`;
+                    const shortDescription = description;
+
+                    const body = {
+                      name,
+                      slug: name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)/g, ''),
+                      description,
+                      shortDescription,
+                      price,
+                      stock,
+                      featured: status === 'active',
+                    };
+
+                    const res = await fetch('/api/products', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(body),
+                    });
+
+                    if (!res.ok) {
+                      const data = await res.json().catch(() => null);
+                      toast.error(data?.error || 'Failed to save product');
+                      return;
+                    }
+
+                    const data = await res.json();
+                    const p = data.data;
+
+                    const mapped: Product = {
+                      id: p.id,
+                      name: p.name,
+                      category: categoryLabel,
+                      price: parseFloat(p.price),
+                      stock: p.stock ?? stock,
+                      status: p.is_active ? 'active' : 'inactive',
+                      image: '/assets/assets1/hat1.jpg',
+                      vendorId: p.vendor_id ?? null,
+                    };
+
+                    const newProducts = [...products, mapped];
+                    setProducts(newProducts);
+                    setFilteredProducts(newProducts);
+                    toast.success('Product saved successfully');
+                    setIsModalOpen(false);
+                    setEditingProduct(null);
+                  } catch (error) {
+                    console.error('Error saving product:', error);
+                    toast.error('Unexpected error saving product');
+                  }
+                }}
+              >
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -379,17 +408,13 @@ export default function ProductsPage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Category
                     </label>
-                    <select
+                    <input
+                      type="text"
                       name="category"
                       defaultValue={editingProduct?.category}
-                      required
+                      placeholder="Category label (for dashboard only)"
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary focus:border-primary dark:bg-dark-surface dark:text-dark-text"
-                    >
-                      <option value="Hats">Hats</option>
-                      <option value="Bags">Bags</option>
-                      <option value="Home Decor">Home Decor</option>
-                      <option value="Jewelry">Jewelry</option>
-                    </select>
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">

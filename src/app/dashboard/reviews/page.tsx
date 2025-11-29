@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth-storage';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { MessageSquare, Star, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 export default function ReviewsPage() {
   const router = useRouter();

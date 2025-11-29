@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
 import { useNotificationStore } from '@/store/notificationStore';
-import { useUserStore } from '@/store/userStore';
 
 interface Address {
   id: string;
@@ -16,7 +15,6 @@ interface Address {
 }
 
 export default function AddressesPage() {
-  const { user, addAddress, removeAddress, updateAddress } = useUserStore();
   const { addNotification } = useNotificationStore();
   const [addresses, setAddresses] = useState<Address[]>([
     {

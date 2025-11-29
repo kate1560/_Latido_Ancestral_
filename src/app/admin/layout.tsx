@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaStore, FaBox, FaShoppingCart, FaUsers, FaCog } from 'react-icons/fa';
+import { FaHome, FaStore, FaBox, FaShoppingCart, FaUsers, FaCog, FaSearch, FaBell } from 'react-icons/fa';
+import { useSearchStore } from '@/store/searchStore';
 
 interface NavLinkProps {
   href: string;
@@ -31,14 +32,47 @@ function NavLink({ href, icon, children, currentPath }: NavLinkProps) {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { adminSearchTerm, setAdminSearchTerm } = useSearchStore();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
+      {/* Top Header Bar */}
+      <div className="fixed top-[120px] left-0 right-0 bg-white border-b border-gray-200 z-40 h-16 flex items-center px-6 shadow-sm">
+        <div className="flex items-center justify-between w-full max-w-full ml-64">
+          <h2 className="text-xl font-bold text-[#8B4513]">Admin Panel</h2>
+          
+          <div className="flex items-center gap-4">
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="relative">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2 w-80">
+                <FaSearch className="text-gray-400" size={16} />
+                <input
+                  type="text"
+                  placeholder="Search products, orders, users..."
+                  value={adminSearchTerm}
+                  onChange={(e) => setAdminSearchTerm(e.target.value)}
+                  className="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder:text-gray-400"
+                />
+              </div>
+            </form>
+
+            {/* Notifications */}
+            <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+              <FaBell className="text-gray-600" size={20} />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex pt-16">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-lg min-h-screen fixed left-0 top-[120px] bottom-0">
+        <aside className="w-64 bg-white shadow-lg min-h-screen fixed left-0 top-[136px] bottom-0">
           <div className="p-6">
-            <h2 className="text-xl font-bold text-[#8B4513] mb-6">Admin Panel</h2>
             <nav className="space-y-2">
               <NavLink href="/admin" icon={<FaHome size={20} />} currentPath={pathname}>
                 Dashboard
