@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FiX, FiGift, FiTag } from 'react-icons/fi';
 import { useNewsletterStore } from '@/store/newsletterStore';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PromoPopupProps {
   delay?: number; // Tiempo de espera antes de mostrar (en ms)
@@ -15,19 +16,25 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { subscribe, isSubscribed } = useNewsletterStore();
   const { addNotification } = useNotificationStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     // No mostrar si ya está suscrito
     if (isSubscribed) return;
 
-    // Verificar si el popup ya se mostró en esta sesión
-    const popupShown = sessionStorage.getItem('promo_popup_shown');
+    const quizSeen = window.localStorage.getItem('style_quiz_seen') === 'true';
+    if (!quizSeen) return; // Esperar a que el usuario haya visto/decidido sobre el quiz
+
+    // Verificar si el popup ya se mostró alguna vez en este dispositivo
+    const popupShown = window.localStorage.getItem('welcome_coupon_shown') === 'true';
     if (popupShown) return;
 
     // Mostrar después del delay
     const timer = setTimeout(() => {
       setIsVisible(true);
-      sessionStorage.setItem('promo_popup_shown', 'true');
+      window.localStorage.setItem('welcome_coupon_shown', 'true');
     }, delay);
 
     return () => clearTimeout(timer);
@@ -43,8 +50,8 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
     if (!email.trim()) {
       addNotification({
         type: 'error',
-        title: 'Error',
-        message: 'Please enter your email address'
+        title: t.common.error,
+        message: t.promo.errors.missingEmail,
       });
       return;
     }
@@ -54,17 +61,28 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
     setIsLoading(false);
 
     if (success) {
+      // Registrar uso del cupón a nivel backend si el usuario está autenticado
+      try {
+        await fetch('/api/coupons/use', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: 'BIENVENIDA10' }),
+        }).catch(() => undefined);
+      } catch {
+        // Silenciar errores de tracking de cupón; la experiencia del usuario no depende de esto
+      }
+
       addNotification({
         type: 'success',
-        title: 'Congratulations!',
-        message: 'Your coupon BIENVENIDO10 is ready to use'
+        title: t.promo.successTitle,
+        message: t.promo.successMessage,
       });
       setIsVisible(false);
     } else {
       addNotification({
         type: 'error',
-        title: 'Error',
-        message: 'Invalid email address'
+        title: t.common.error,
+        message: t.promo.errors.invalidEmail,
       });
     }
   };
@@ -99,17 +117,17 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
               <FiGift className="w-10 h-10" />
             </div>
             <h2 className="text-3xl font-bold mb-2">
-              10% Discount!
+              {t.promo.title}
             </h2>
             <p className="text-lg text-white/90">
-              On your first purchase
+              {t.promo.subtitle}
             </p>
           </div>
 
           {/* Contenido */}
           <div className="p-8">
             <p className="text-center text-gray-600 mb-6">
-              Subscribe to our newsletter and receive a <strong>10% discount</strong> coupon for your first purchase
+              {t.promo.description}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -117,7 +135,7 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder={t.promo.emailPlaceholder}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary transition-all"
                 disabled={isLoading}
               />
@@ -127,7 +145,7 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
                 disabled={isLoading}
                 className="w-full py-3 bg-gradient-to-r from-[#D2691E] to-[#8B4513] text-white font-bold rounded-xl transition-all shadow-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Processing...' : 'Get My Coupon'}
+                {isLoading ? t.common.loading : t.promo.button}
               </button>
             </form>
 
@@ -145,7 +163,7 @@ export default function PromoPopup({ delay = 5000 }: PromoPopupProps) {
             </div>
 
             <p className="text-xs text-center text-gray-500 mt-4">
-              No spam. You can unsubscribe at any time.
+              {t.promo.footerNote}
             </p>
           </div>
         </div>

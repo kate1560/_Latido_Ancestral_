@@ -18,74 +18,74 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    question: "What type of environment makes you feel most like yourself?",
+    question: "When you think about decorating your home, what is your main priority?",
     options: [
-      { label: "Vibrant colors, energy and joy", value: "A", style: 'A' },
-      { label: "Soft nature, sandy tones", value: "B", style: 'B' },
-      { label: "Tradition, culture and stories", value: "C", style: 'C' },
-      { label: "Minimalism with a tropical touch", value: "D", style: 'D' },
-    ]
+      { label: "A bold, colorful space that impresses visitors", value: "A", style: 'A' },
+      { label: "A calm, natural environment that feels like a retreat", value: "B", style: 'B' },
+      { label: "A space that tells stories and highlights cultural roots", value: "C", style: 'C' },
+      { label: "A clean and modern space with subtle accents", value: "D", style: 'D' },
+    ],
   },
   {
     id: 2,
-    question: "What colors catch your attention the most?",
+    question: "Which color palette would you choose for a set of handmade pieces?",
     options: [
-      { label: "Yellow, red, fuchsia, turquoise", value: "A", style: 'A' },
-      { label: "Beige, terracotta, olive, navy blue", value: "B", style: 'B' },
-      { label: "Black, burnt earth, gold", value: "C", style: 'C' },
-      { label: "White, gray, pastel colors", value: "D", style: 'D' },
-    ]
+      { label: "Intense colors: fuchsia, turquoise, yellow, red", value: "A", style: 'A' },
+      { label: "Earthy tones: beige, terracotta, olive, navy", value: "B", style: 'B' },
+      { label: "Deep tones: black, ochre, gold", value: "C", style: 'C' },
+      { label: "Neutrals: white, gray, sand, soft pastels", value: "D", style: 'D' },
+    ],
   },
   {
     id: 3,
-    question: "How would you describe your personal style?",
+    question: "When you choose a handcrafted product, what do you evaluate first?",
     options: [
-      { label: "Extroverted, vibrant, eye-catching", value: "A", style: 'A' },
-      { label: "Relaxed, beachy, chill", value: "B", style: 'B' },
-      { label: "Cultural, deep, with identity", value: "C", style: 'C' },
-      { label: "Modern, clean, elegant", value: "D", style: 'D' },
-    ]
+      { label: "That it stands out and is visually striking", value: "A", style: 'A' },
+      { label: "That it feels organic, comfortable and natural", value: "B", style: 'B' },
+      { label: "That it has a clear cultural or ancestral meaning", value: "C", style: 'C' },
+      { label: "That the design is contemporary and well balanced", value: "D", style: 'D' },
+    ],
   },
   {
     id: 4,
-    question: "In what type of spaces do you imagine your crafts?",
+    question: "In which space would you most like to place a key piece from Latido Ancestral?",
     options: [
-      { label: "A colorful place full of life", value: "A", style: 'A' },
-      { label: "A house near the sea", value: "B", style: 'B' },
-      { label: "A room with authentic traditional pieces", value: "C", style: 'C' },
-      { label: "A modern apartment with tropical details", value: "D", style: 'D' },
-    ]
+      { label: "A social area where color and energy are the protagonists", value: "A", style: 'A' },
+      { label: "A terrace, balcony or room with a coastal feeling", value: "B", style: 'B' },
+      { label: "A living room or studio where you display unique cultural pieces", value: "C", style: 'C' },
+      { label: "A minimalist living room or workspace with curated details", value: "D", style: 'D' },
+    ],
   },
   {
     id: 5,
-    question: "What moves you most when buying crafts?",
+    question: "What type of Colombian craft are you most likely to invest in?",
     options: [
-      { label: "The striking colors and patterns", value: "A", style: 'A' },
-      { label: "The natural, handmade quality", value: "B", style: 'B' },
-      { label: "The story behind each piece", value: "C", style: 'C' },
-      { label: "The aesthetics and design of the product", value: "D", style: 'D' },
-    ]
+      { label: "Colorful bags, statement accessories and bold textiles", value: "A", style: 'A' },
+      { label: "Hammocks, natural fiber pieces and elements that invite you to relax", value: "B", style: 'B' },
+      { label: "Symbolic pieces: masks, ceremonial elements, traditional designs", value: "C", style: 'C' },
+      { label: "Limited edition designs with a contemporary and exclusive touch", value: "D", style: 'D' },
+    ],
   },
   {
     id: 6,
-    question: "What type of product excites you the most?",
+    question: "How do you want people to feel when they see your space?",
     options: [
-      { label: "Wayuu bags in very bright colors", value: "A", style: 'A' },
-      { label: "Decoration in natural fibers", value: "B", style: 'B' },
-      { label: "Necklaces, masks, cultural pieces", value: "C", style: 'C' },
-      { label: "Minimalist and modern crafts", value: "D", style: 'D' },
-    ]
+      { label: "Inspired by your energy and creativity", value: "A", style: 'A' },
+      { label: "Relaxed and connected to nature", value: "B", style: 'B' },
+      { label: "Curious about your roots and the stories behind each piece", value: "C", style: 'C' },
+      { label: "Impressed by the elegance and harmony of the space", value: "D", style: 'D' },
+    ],
   },
   {
     id: 7,
-    question: "What word represents you the most?",
+    question: "Which word best represents your current lifestyle?",
     options: [
-      { label: "Energy", value: "A", style: 'A' },
-      { label: "Breeze", value: "B", style: 'B' },
-      { label: "Roots", value: "C", style: 'C' },
-      { label: "Balance", value: "D", style: 'D' },
-    ]
-  }
+      { label: "Vibrant", value: "A", style: 'A' },
+      { label: "Calm", value: "B", style: 'B' },
+      { label: "Rooted", value: "C", style: 'C' },
+      { label: "Balanced", value: "D", style: 'D' },
+    ],
+  },
 ];
 
 const styleProfiles = {
@@ -144,51 +144,34 @@ export default function StyleQuizPage() {
   const [suggestion, setSuggestion] = useState('');
 
   const handleAnswer = (value: string) => {
-    console.log('Answer selected:', value, 'for question:', currentQuestion);
     const newAnswers = { ...answers, [currentQuestion]: value };
-    console.log('Updated answers:', newAnswers);
     setAnswers(newAnswers);
   };
 
   const handleNext = () => {
-    console.log('=== NEXT BUTTON CLICKED ===');
-    console.log('Current question index:', currentQuestion);
-    console.log('All answers:', answers);
-    console.log('Current answer:', answers[currentQuestion]);
-    
     if (!answers[currentQuestion]) {
-      console.log('No answer selected, showing error');
       toast.error('Please select an answer before continuing');
       return;
     }
-    
+
     if (currentQuestion < questions.length - 1) {
-      const nextQuestion = currentQuestion + 1;
-      console.log('Moving to question:', nextQuestion);
-      setCurrentQuestion(nextQuestion);
-      console.log('State updated to:', nextQuestion);
+      setCurrentQuestion((prev) => prev + 1);
     } else {
-      console.log('Last question, calculating results');
       calculateResults();
     }
   };
 
   const handlePrevious = () => {
-    console.log('Previous clicked, current question:', currentQuestion);
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion((prev) => prev - 1);
     }
   };
 
   const calculateResults = () => {
     const counts = { A: 0, B: 0, C: 0, D: 0 };
-    Object.values(answers).forEach(answer => {
+    Object.values(answers).forEach((answer) => {
       counts[answer as keyof typeof counts]++;
     });
-
-    const dominantStyle = Object.entries(counts).reduce((a, b) => 
-      counts[a[0] as keyof typeof counts] > counts[b[0] as keyof typeof counts] ? a : b
-    )[0] as 'A' | 'B' | 'C' | 'D';
 
     setShowResults(true);
   };

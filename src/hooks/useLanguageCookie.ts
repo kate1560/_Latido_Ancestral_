@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { DEFAULT_LANGUAGE } from '@/config/i18n';
 

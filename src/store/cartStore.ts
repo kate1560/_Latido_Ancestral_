@@ -1,11 +1,12 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Product, ProductVariant } from '@/types';
 
 interface CartStore {
   items: CartItem[];
   discountCode?: string;
   discountAmount: number;
+  userId: string | null;
   addItem: (product: Product, quantity: number, variant?: ProductVariant) => void;
   removeItem: (productId: string, variantId?: string) => void;
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void;
@@ -15,7 +16,45 @@ interface CartStore {
   getSubtotal: () => number;
   getTotal: () => number;
   getItemCount: () => number;
+  setUserId: (userId: string | null) => void;
 }
+
+// Función para obtener el userId actual
+const getCurrentUserId = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const userStorage = localStorage.getItem('user-storage');
+    if (userStorage) {
+      const userData = JSON.parse(userStorage);
+      return userData?.state?.user?.id || userData?.state?.user?.email || null;
+    }
+  } catch (error) {
+    console.error('Error getting user ID:', error);
+  }
+  
+  return null;
+};
+
+// Storage personalizado que usa el userId como parte de la key
+const userSpecificStorage = {
+  getItem: (name: string) => {
+    const userId = getCurrentUserId();
+    const key = userId ? `${name}-${userId}` : `${name}-guest`;
+    const value = localStorage.getItem(key);
+    return value;
+  },
+  setItem: (name: string, value: string) => {
+    const userId = getCurrentUserId();
+    const key = userId ? `${name}-${userId}` : `${name}-guest`;
+    localStorage.setItem(key, value);
+  },
+  removeItem: (name: string) => {
+    const userId = getCurrentUserId();
+    const key = userId ? `${name}-${userId}` : `${name}-guest`;
+    localStorage.removeItem(key);
+  },
+};
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -23,6 +62,7 @@ export const useCartStore = create<CartStore>()(
       items: [],
       discountCode: undefined,
       discountAmount: 0,
+      userId: getCurrentUserId(),
 
       addItem: (product, quantity, variant) => {
         set((state) => {
@@ -100,9 +140,12 @@ export const useCartStore = create<CartStore>()(
         const items = get().items;
         return items.reduce((count, item) => count + item.quantity, 0);
       },
+
+      setUserId: (userId) => set({ userId }),
     }),
     {
       name: 'cart-storage',
+      storage: createJSONStorage(() => userSpecificStorage),
       skipHydration: true,
     }
   )

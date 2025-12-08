@@ -26,6 +26,7 @@ export const es = {
     previous: 'Anterior',
     close: 'Cerrar',
     viewAll: 'Ver todo',
+    dashboard: 'Panel',
   },
   nav: {
     home: 'Inicio',
@@ -34,6 +35,42 @@ export const es = {
     essence: 'Esencia',
     contact: 'Contacto',
     about: 'Acerca de',
+    shop: 'Tienda',
+    styleQuiz: 'Style Quiz',
+  },
+  home: {
+    heroTagline: 'Bienvenido a Ancestral Heartbeat - Artesanías colombianas auténticas',
+    featuredProducts: 'Productos destacados',
+    ourCollections: 'Nuestras colecciones',
+    exploreCollection: 'Explorar colección',
+    traditionTitle: 'Tradición en cada hilo',
+    traditionText:
+      'En Ancestral Heartbeat, cada artesanía se crea con técnicas tradicionales transmitidas de generación en generación. Trabajamos directamente con artesanos colombianos para llevarte piezas únicas que celebran nuestra cultura y tradición.',
+    learnMoreAboutUs: 'Conoce más sobre nosotros',
+  },
+  quiz: {
+    badge: 'Style Quiz',
+    title: 'Descubre tu estilo ideal de artesanías',
+    description:
+      'Antes de continuar en la tienda, responde un breve quiz para que podamos recomendarte los mejores productos según tus preferencias y ubicación.',
+    noteOnce: 'Este quiz aparece solo una vez por dispositivo. Siempre podrás repetirlo desde el menú.',
+    startButton: 'Comenzar Style Quiz',
+    skipButton: 'Omitir por ahora',
+  },
+  promo: {
+    title: '¡10% de descuento!',
+    subtitle: 'En tu primera compra',
+    description:
+      'Suscríbete a nuestro boletín y recibe un cupón de 10% de descuento para tu primera compra.',
+    emailPlaceholder: 'tu@correo.com',
+    button: 'Obtener mi cupón',
+    footerNote: 'Sin spam. Puedes cancelar la suscripción en cualquier momento.',
+    errors: {
+      missingEmail: 'Por favor ingresa tu correo electrónico',
+      invalidEmail: 'Correo electrónico inválido',
+    },
+    successTitle: '¡Felicidades!',
+    successMessage: 'Tu cupón BIENVENIDO10 está listo para usar',
   },
   product: {
     featured: 'Destacado',

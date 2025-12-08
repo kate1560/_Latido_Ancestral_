@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { supabaseBrowserClient } from '@/lib/supabaseClient';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,9 +23,21 @@ export default function LoginPage() {
     setError('');
 
     try {
+      // 1) Login en Supabase Auth para crear la sesión (cookies sb-*)
+      const { data: signInData, error: signInError } = await supabaseBrowserClient.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signInError || !signInData.user) {
+        throw new Error(signInError?.message || 'Login failed');
+      }
+
+      // 2) Sincronizar con el backend para obtener el perfil (usuarios) y auth_token
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -34,13 +47,13 @@ export default function LoginPage() {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Guardar usuario en localStorage
+      // Guardar usuario en localStorage (para código cliente que ya lo usa)
       localStorage.setItem('user', JSON.stringify({
         id: data.user.id,
         email: data.user.email,
         firstName: data.user.firstName || data.user.name?.split(' ')[0] || '',
         lastName: data.user.lastName || data.user.name?.split(' ')[1] || '',
-        role: data.user.role
+        role: data.user.role,
       }));
 
       // Redirigir al dashboard

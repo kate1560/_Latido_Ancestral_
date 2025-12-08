@@ -7,6 +7,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { useNotificationStore } from '@/store/notificationStore';
 import { useCartSidebar } from '@/contexts/CartSidebarContext';
 import type { Product } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProductActionsProps {
   product: Product;
@@ -18,6 +19,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const { toggleItem, isInWishlist } = useWishlistStore();
   const { addNotification } = useNotificationStore();
   const { openCart } = useCartSidebar();
+  const { t } = useTranslation();
 
   const inWishlist = isInWishlist(product.id);
 
@@ -47,7 +49,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
         className="btn-primary flex-1 flex items-center justify-center gap-2 hover:shadow-lg transition-all"
       >
         <FaShoppingCart />
-        Add to Cart
+        {t.common.addToCart}
       </button>
       <button 
         onClick={handleToggleFavorite}

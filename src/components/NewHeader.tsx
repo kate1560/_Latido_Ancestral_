@@ -3,29 +3,29 @@
 import Link from 'next/link';
 import LogoAncestral from './LogoAncestral';
 import type { Product } from '@/types';
+import { products } from '@/data/products';
 import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useState, useEffect } from 'react';
-import { FaShoppingCart, FaHeart, FaUser, FaSearch } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaSearch } from 'react-icons/fa';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useUserStore } from '@/store/userStore';
 import { useCartSidebar } from '@/contexts/CartSidebarContext';
 import { getCurrentUser } from '@/lib/auth-storage';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function NewHeader() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [modalSearchTerm, setModalSearchTerm] = useState("");
   const [modalResults, setModalResults] = useState<Product[]>([]);
   const modalRef = useRef(null);
-  // Importar productos
-  // @ts-ignore
-  const { products } = require('@/data/products');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const { t } = useTranslation();
 
   const { items, getItemCount } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
@@ -81,7 +81,7 @@ export default function NewHeader() {
           className="bg-[#8B4513] text-white h-10 text-sm flex items-center relative"
           style={{ paddingLeft: '16px', paddingRight: '16px' }}
         >
-          <span className="ml-18">Welcome to Ancestral Heartbeat - Authentic Colombian Crafts</span>
+          <span className="ml-18">{t.home.heroTagline}</span>
 
           {/* Logo a la izquierda */}
           <div
@@ -97,9 +97,9 @@ export default function NewHeader() {
           {/* Acciones a la derecha */}
           <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
             <div className="flex items-center gap-4 whitespace-nowrap">
-                <Link href="/wishlist" className="flex items-center text-white hover:text-gray-200 text-sm font-medium relative">
+              <Link href="/wishlist" className="flex items-center text-white hover:text-gray-200 text-sm font-medium relative">
                 <FaHeart size={14} className="mr-2" />
-                <span>Wishlist</span>
+                <span>{t.common.wishlist}</span>
                   {wishlistCount > 0 && (
                     <span className="absolute -top-2 -right-6 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {wishlistCount}
@@ -108,11 +108,11 @@ export default function NewHeader() {
               </Link>
               {currentUser ? (
                 <Link href="/dashboard" className="text-white hover:text-gray-200 text-sm font-medium">
-                  <span>Dashboard</span>
+                  <span>{t.common.dashboard}</span>
                 </Link>
               ) : (
                 <Link href="/login" className="text-white hover:text-gray-200 text-sm font-medium">
-                  <span>Login</span>
+                  <span>{t.common.login}</span>
                 </Link>
               )}
             </div>
@@ -128,17 +128,11 @@ export default function NewHeader() {
           </div>
           {/* Center: Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">Home</Link>
-            <Link href="/shop" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">Shop</Link>
-            <Link href="/collections" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">Collections</Link>
-            <Link href="/style-quiz" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">
-              <span className="relative">
-                Style Quiz
-                <span className="absolute -top-2 -right-8 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">NEW</span>
-              </span>
-            </Link>
-            <Link href="/essence" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">Our Essence</Link>
-            <Link href="/contact" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">Contact</Link>
+            <Link href="/" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">{t.nav.home}</Link>
+            <Link href="/shop" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">{t.nav.shop}</Link>
+            <Link href="/collections" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">{t.nav.collections}</Link>
+            <Link href="/essence" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">{t.nav.essence}</Link>
+            <Link href="/contact" className="text-gray-700 hover:text-[#8B4513] transition-colors font-medium">{t.nav.contact}</Link>
           </nav>
           {/* Right Actions */}
           <div className="flex items-center gap-4 ml-auto pr-4 z-10">
@@ -187,12 +181,12 @@ export default function NewHeader() {
             >
               &times;
             </button>
-            <h2 className="text-xl font-bold mb-4 text-center">Search Products</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">{t.common.search}</h2>
             <input
               type="text"
               value={modalSearchTerm}
               onChange={e => setModalSearchTerm(e.target.value)}
-              placeholder="Enter product name or category..."
+              placeholder="Search products..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
@@ -208,7 +202,7 @@ export default function NewHeader() {
                 );
                 setModalResults(results);
               }}
-            >Search</button>
+            >{t.common.search}</button>
             <div>
               {modalResults.length > 0 ? (
                 <ul className="divide-y divide-gray-200">
@@ -220,7 +214,7 @@ export default function NewHeader() {
                         <div className="text-sm text-gray-500">{product.category}</div>
                       </div>
                       <Link href={`/products/${product.id}`} className="text-primary font-bold hover:underline" onClick={() => setShowSearchModal(false)}>
-                        View Details
+                        {t.common.viewDetails}
                       </Link>
                     </li>
                   ))}
@@ -235,20 +229,20 @@ export default function NewHeader() {
       )}
       <div className={`lg:hidden bg-white border-t border-gray-200 transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen' : 'max-h-0'}`}>
         <nav className="container mx-auto px-4 py-4 space-y-3">
-          <Link href="/" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>Home</Link>
-          <Link href="/shop" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>Shop</Link>
-          <Link href="/collections" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>Collections</Link>
-          <Link href="/essence" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>Our Essence</Link>
-          <Link href="/contact" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+          <Link href="/" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>{t.nav.home}</Link>
+          <Link href="/shop" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>{t.nav.shop}</Link>
+          <Link href="/collections" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>{t.nav.collections}</Link>
+          <Link href="/essence" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>{t.nav.essence}</Link>
+          <Link href="/contact" className="block py-2 text-gray-700 hover:text-[#8B4513] font-medium" onClick={() => setIsMenuOpen(false)}>{t.nav.contact}</Link>
           <div className="border-t pt-3 mt-3">
-            <Link href="/wishlist" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>Wishlist ({wishlistCount})</Link>
+            <Link href="/wishlist" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>{t.common.wishlist} ({wishlistCount})</Link>
             {isAuthenticated ? (
               <>
-                <Link href="/profile" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>Profile</Link>
-                <button onClick={() => { logout(); setIsMenuOpen(false); }} className="block w-full text-left py-2 text-red-600">Logout</button>
+                <Link href="/profile" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>{t.common.profile}</Link>
+                <button onClick={() => { logout(); setIsMenuOpen(false); }} className="block w-full text-left py-2 text-red-600">{t.common.logout}</button>
               </>
             ) : (
-              <Link href="/profile" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>Login</Link>
+              <Link href="/profile" className="block py-2 text-gray-700 hover:text-[#8B4513]" onClick={() => setIsMenuOpen(false)}>{t.common.login}</Link>
             )}
           </div>
         </nav>

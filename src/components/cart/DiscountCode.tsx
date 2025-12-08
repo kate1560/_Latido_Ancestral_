@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useCouponStore } from '@/store/couponStore';
 import { FiTag, FiX, FiCheck } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface DiscountCodeProps {
   cartTotal: number;
@@ -13,8 +14,9 @@ export default function DiscountCode({ cartTotal }: DiscountCodeProps) {
   const { appliedCoupon, applyCoupon, removeCoupon, validateCoupon, calculateDiscount } = useCouponStore();
   const [code, setCode] = useState('');
   const [isApplying, setIsApplying] = useState(false);
+  const { t } = useTranslation();
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (!code.trim()) {
       toast.error('Please enter a coupon code');
       return;
@@ -22,25 +24,17 @@ export default function DiscountCode({ cartTotal }: DiscountCodeProps) {
 
     setIsApplying(true);
 
-    // Validate coupon
-    const validation = validateCoupon(code, cartTotal);
-    
-    if (!validation.valid) {
+    const validation = await validateCoupon(code, cartTotal);
+
+    if (!validation.valid || !validation.coupon) {
       toast.error(validation.message || 'Invalid coupon code');
       setIsApplying(false);
       return;
     }
 
-    // Apply coupon
-    const success = applyCoupon(code);
-    
-    if (success) {
-      toast.success('Coupon applied successfully!');
-      setCode('');
-    } else {
-      toast.error('Invalid coupon code');
-    }
-    
+    applyCoupon(validation.coupon);
+    toast.success('Coupon applied successfully!');
+    setCode('');
     setIsApplying(false);
   };
 
@@ -119,15 +113,11 @@ export default function DiscountCode({ cartTotal }: DiscountCodeProps) {
             </button>
           </div>
 
-          {/* Available Coupons Hint */}
+          {/* Available Coupons Hint (example) */}
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            <p className="font-medium mb-1">Available Coupons:</p>
+            <p className="font-medium mb-1">Example coupon:</p>
             <ul className="list-disc list-inside space-y-0.5 ml-2">
-              <li>WELCOME10 - 10% off on orders over $50,000</li>
-              <li>SUMMER20 - 20% off on orders over $100,000</li>
-              <li>FREESHIP - Free shipping on orders over $80,000</li>
-              <li>FIRST15 - 15% off for first-time buyers</li>
-              <li>ANCESTRAL25 - 25% off on orders over $200,000</li>
+              <li>BIENVENIDA10 - Welcome discount (configured in database)</li>
             </ul>
           </div>
         </div>

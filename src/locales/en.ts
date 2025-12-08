@@ -28,6 +28,7 @@ export const en: Translations = {
     previous: 'Previous',
     close: 'Close',
     viewAll: 'View All',
+    dashboard: 'Dashboard',
   },
   nav: {
     home: 'Home',
@@ -36,6 +37,42 @@ export const en: Translations = {
     essence: 'Our Essence',
     contact: 'Contact',
     about: 'About',
+    shop: 'Shop',
+    styleQuiz: 'Style Quiz',
+  },
+  home: {
+    heroTagline: 'Welcome to Ancestral Heartbeat - Authentic Colombian Crafts',
+    featuredProducts: 'Featured Products',
+    ourCollections: 'Our Collections',
+    exploreCollection: 'Explore Collection',
+    traditionTitle: 'Tradition in Every Thread',
+    traditionText:
+      'At Ancestral Heartbeat, each craft is created with traditional techniques passed down from generation to generation. We work directly with Colombian artisans to bring you unique pieces that celebrate our culture and tradition.',
+    learnMoreAboutUs: 'Learn More About Us',
+  },
+  quiz: {
+    badge: 'Style Quiz',
+    title: 'Discover your ideal crafts style',
+    description:
+      'Before you continue in the store, answer a short style quiz so we can recommend the best products for you based on your preferences and location.',
+    noteOnce: 'This quiz appears only once per device. You can always retake it later from the menu.',
+    startButton: 'Start Style Quiz',
+    skipButton: 'Skip for now',
+  },
+  promo: {
+    title: '10% Discount!',
+    subtitle: 'On your first purchase',
+    description:
+      'Subscribe to our newsletter and receive a 10% discount coupon for your first purchase.',
+    emailPlaceholder: 'your@email.com',
+    button: 'Get My Coupon',
+    footerNote: 'No spam. You can unsubscribe at any time.',
+    errors: {
+      missingEmail: 'Please enter your email address',
+      invalidEmail: 'Invalid email address',
+    },
+    successTitle: 'Congratulations!',
+    successMessage: 'Your coupon BIENVENIDO10 is ready to use',
   },
   product: {
     featured: 'Featured',

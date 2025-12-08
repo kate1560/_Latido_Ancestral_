@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaEdit, FaTrash, FaPlus, FaSearch } from 'react-icons/fa';
 import { useNotificationStore } from '@/store/notificationStore';
 import { useUserStore } from '@/store/userStore';
+import { products as featuredProductsData } from '@/data/products';
 
 interface Product {
   id: number;
@@ -39,11 +41,17 @@ export default function StoreManagerProductsPage() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/store-manager/products');
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data.data || []);
-      }
+      // Usar productos de featured products con datos mock
+      const mockProducts = featuredProductsData.map((p, index) => ({
+        id: index + 1,
+        name: p.name,
+        price: p.price,
+        category: p.category,
+        stock: 30 + Math.floor(Math.random() * 50),
+        image: p.image,
+        createdAt: new Date().toISOString(),
+      }));
+      setProducts(mockProducts);
     } catch (error) {
       console.error('Failed to fetch products:', error);
       addNotification({
@@ -115,76 +123,67 @@ export default function StoreManagerProductsPage() {
         </div>
       </div>
 
-      {/* Products Table */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading products...</div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <p className="mb-4">No products yet</p>
-            <Link
-              href="/store-manager/products/new"
-              className="inline-block bg-[#8B4513] text-white px-6 py-2 rounded-lg hover:bg-[#6B3410] transition-colors"
-            >
-              Create Your First Product
-            </Link>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-100 border-b-2 border-[#D2691E]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Price</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Stock</th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">{product.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{product.category}</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                      ${product.price.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.stock > 10
-                          ? 'bg-green-100 text-green-800'
-                          : product.stock > 0
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {product.stock} units
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center justify-center gap-2">
-                        <Link
-                          href={`/store-manager/products/${product.id}`}
-                          className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                          title="Edit"
-                        >
-                          <FaEdit size={16} />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                          title="Delete"
-                        >
-                          <FaTrash size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Products Grid */}
+      {isLoading ? (
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">Loading products...</div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">
+          <p className="mb-4">No products yet</p>
+          <Link
+            href="/store-manager/products/new"
+            className="inline-block bg-[#8B4513] text-white px-6 py-2 rounded-lg hover:bg-[#6B3410] transition-colors"
+          >
+            Create Your First Product
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="relative h-64 bg-gray-200">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${
+                  product.stock > 10
+                    ? 'bg-green-500 text-white'
+                    : product.stock > 0
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-red-500 text-white'
+                }`}>
+                  Stock: {product.stock}
+                </span>
+              </div>
+              
+              <div className="p-4">
+                <h3 className="font-bold text-lg mb-1 text-gray-900">{product.name}</h3>
+                <p className="text-sm text-gray-600 mb-2">{product.category}</p>
+                <p className="text-xl font-bold text-[#8B4513] mb-4">${product.price.toFixed(2)}</p>
+                
+                <div className="flex gap-2">
+                  <Link
+                    href={`/store-manager/products/${product.id}`}
+                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    <FaEdit size={14} />
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Stats Footer */}
       {products.length > 0 && (

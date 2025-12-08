@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
@@ -5,8 +7,10 @@ import NewsletterSection from "@/components/NewsletterSection";
 import HeroSliderWrapper from "@/components/home/HeroSliderWrapper";
 import Testimonials from "@/components/home/Testimonials";
 import { products, categories } from "@/data/products";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Home() {
+  const { t } = useTranslation();
   const featuredProducts = products.filter((p) => p.featured);
 
   return (
@@ -17,7 +21,7 @@ export default function Home() {
       {/* Featured Products */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-12 text-dark">
-          Featured Products
+          {t.home.featuredProducts}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredProducts.map((product) => (
@@ -30,7 +34,7 @@ export default function Home() {
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-dark">
-            Our Collections
+            {t.home.ourCollections}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((category) => (
@@ -62,7 +66,7 @@ export default function Home() {
                     {category.description}
                   </p>
                   <div className="mt-4 flex items-center text-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="font-semibold">Explore Collection</span>
+                    <span className="font-semibold">{t.home.exploreCollection}</span>
                     <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                       <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -78,13 +82,13 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 text-dark">
-            Tradition in Every Thread
+            {t.home.traditionTitle}
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            At Ancestral Heartbeat, each craft is created with traditional techniques passed down from generation to generation. We work directly with Colombian artisans to bring you unique pieces that celebrate our culture and tradition.
+            {t.home.traditionText}
           </p>
           <Link href="/essence" className="btn-primary">
-            Learn More About Us
+            {t.home.learnMoreAboutUs}
           </Link>
         </div>
       </section>

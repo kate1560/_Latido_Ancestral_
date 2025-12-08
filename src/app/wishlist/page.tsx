@@ -7,10 +7,12 @@ import { Product } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiHeart, FiShoppingCart, FiTrash2 } from 'react-icons/fi';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function WishlistPage() {
   const { items, removeItem } = useWishlistStore();
   const { addItem } = useCartStore();
+  const { t } = useTranslation();
 
   const wishlistProducts = products.filter((p) => items.includes(p.id));
 
@@ -24,7 +26,7 @@ export default function WishlistPage() {
         <div className="max-w-2xl mx-auto text-center px-4">
           <FiHeart className="mx-auto text-6xl text-gray-300 mb-4" />
           <h1 className="text-3xl font-bold text-gray-800 mb-4">
-            Your wish list is empty
+            {t.common.wishlist} - empty
           </h1>
           <p className="text-gray-600 mb-8">
             Save your favorite products to buy them later
@@ -45,7 +47,7 @@ export default function WishlistPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 mb-8">
           <FiHeart className="text-4xl text-red-500" />
-          <h1 className="text-4xl font-bold text-gray-800">My Wishlist</h1>
+          <h1 className="text-4xl font-bold text-gray-800">{t.common.wishlist}</h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -88,7 +90,7 @@ export default function WishlistPage() {
                     onClick={() => handleAddToCart(product)}
                     className="flex-1 flex items-center justify-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
                   >
-                    <FiShoppingCart /> Add to Cart
+                    <FiShoppingCart /> {t.common.addToCart}
                   </button>
 
                   <button

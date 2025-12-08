@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaBox, FaShoppingCart, FaChartLine, FaDollarSign, FaArrowUp } from 'react-icons/fa';
 import { useUserStore } from '@/store/userStore';
+import { products } from '@/data/products';
+import { useSearchStore } from '@/store/searchStore';
 
 interface StoreStat {
   productsCount: number;
@@ -50,6 +53,16 @@ export default function StoreManagerDashboard() {
     averageOrderValue: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const { managerSearchTerm } = useSearchStore();
+  
+  const allFeaturedProducts = products.filter((p) => p.featured);
+  
+  // Filtrar productos basado en el término de búsqueda
+  const featuredProducts = allFeaturedProducts.filter(product =>
+    product.name.toLowerCase().includes(managerSearchTerm.toLowerCase()) ||
+    product.description.toLowerCase().includes(managerSearchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(managerSearchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     // Fetch store manager stats from API
@@ -142,29 +155,48 @@ export default function StoreManagerDashboard() {
         </div>
       </div>
 
-      {/* Recent Products */}
+      {/* Featured Products */}
       <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-[#8B4513]">Low Stock Products</h2>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-            <div>
-              <p className="font-semibold text-gray-800">Colombian Wayuu Bag</p>
-              <p className="text-sm text-gray-500">Only 3 units left</p>
-            </div>
-            <Link href="/store-manager/products" className="text-sm bg-yellow-200 hover:bg-yellow-300 text-yellow-900 px-3 py-1 rounded-full font-medium">
-              Restock
-            </Link>
+        <h2 className="text-2xl font-bold mb-6 text-[#8B4513]">Featured Products</h2>
+        {featuredProducts.length === 0 && managerSearchTerm ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No products found matching "{managerSearchTerm}"</p>
           </div>
-          <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-            <div>
-              <p className="font-semibold text-gray-800">Handmade Hammock</p>
-              <p className="text-sm text-gray-500">Only 5 units left</p>
-            </div>
-            <Link href="/store-manager/products" className="text-sm bg-yellow-200 hover:bg-yellow-300 text-yellow-900 px-3 py-1 rounded-full font-medium">
-              Restock
-            </Link>
+        ) : featuredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No featured products available</p>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredProducts.map((product) => (
+            <Link
+              key={product.id}
+              href={`/store-manager/products/${product.id}`}
+              className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow border-2 border-transparent hover:border-[#D2691E]"
+            >
+              <div className="relative h-48 w-full">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-lg mb-2 text-gray-800">{product.name}</h3>
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-bold text-[#8B4513]">${product.price}</span>
+                  {product.featured && (
+                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-semibold">Featured</span>
+                  )}
+                </div>
+              </div>
+            </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { supabaseBrowserClient } from '@/lib/supabaseClient';
 
 interface LogoutButtonProps {
   className?: string;
@@ -22,8 +23,14 @@ export default function LogoutButton({
 
   const handleLogout = async () => {
     try {
-      // Aquí podrías hacer una llamada a la API para invalidar el token si es necesario
-      // await api.post('/api/auth/logout');
+      // Cerrar sesión en Supabase (elimina cookies de sesión)
+      await supabaseBrowserClient.auth.signOut();
+
+      // Notificar al backend para limpiar auth_token
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
       
       // Eliminar el usuario del almacenamiento local
       localStorage.removeItem('user');

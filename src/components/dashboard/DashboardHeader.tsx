@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search, User, ChevronDown, Moon, Sun, LogOut } from 'lucide-react';
+import { Bell, Search, User, ChevronDown, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, logout } from '@/lib/auth-storage';
@@ -9,13 +9,16 @@ import { toast } from 'react-hot-toast';
 interface DashboardHeaderProps {
   title: string;
   breadcrumbs?: { label: string; href?: string }[];
+  onSearch?: (searchTerm: string) => void;
+  searchPlaceholder?: string;
 }
 
-export default function DashboardHeader({ title, breadcrumbs }: DashboardHeaderProps) {
+export default function DashboardHeader({ title, breadcrumbs, onSearch, searchPlaceholder = "Search..." }: DashboardHeaderProps) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -61,7 +64,12 @@ export default function DashboardHeader({ title, breadcrumbs }: DashboardHeaderP
             <Search className="w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                onSearch?.(e.target.value);
+              }}
               className="bg-transparent border-none outline-none text-sm w-full text-dark dark:text-dark-text placeholder:text-gray-400"
             />
           </div>
@@ -117,7 +125,13 @@ export default function DashboardHeader({ title, breadcrumbs }: DashboardHeaderP
                     ))}
                   </div>
                   <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
-                    <button className="text-sm text-primary font-semibold hover:underline">
+                    <button 
+                      onClick={() => {
+                        setShowNotifications(false);
+                        router.push('/dashboard/notifications');
+                      }}
+                      className="text-sm text-primary font-semibold hover:underline"
+                    >
                       View all notifications
                     </button>
                   </div>

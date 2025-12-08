@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import NewHeader from "@/components/NewHeader";
-import Footer from "@/components/Footer";
+import FooterWrapper from "@/components/FooterWrapper";
 import StoreHydration from "@/components/StoreHydration";
 import NotificationToast from "@/components/NotificationToast";
 import PromoPopup from "@/components/PromoPopup";
+import StyleQuizEntryModal from "@/components/StyleQuizEntryModal";
 import { QuickViewProvider } from "@/contexts/QuickViewContext";
 import QuickViewModal from "@/components/modals/QuickViewModal";
 import { CartSidebarProvider } from "@/contexts/CartSidebarContext";
 import CartSidebar from "@/components/cart/CartSidebar";
+import CartSessionManager from "@/components/CartSessionManager";
 
 export const metadata: Metadata = {
   title: "Ancestral heartbeat - Artesanías Colombianas",
@@ -19,6 +21,8 @@ export const metadata: Metadata = {
     description: "Descubre artesanías colombianas auténticas hechas a mano",
     type: "website",
   },
+  // Fijamos metadataBase para evitar el warning de Next.js y preparar el proyecto para despliegue.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
 };
 
 export default function RootLayout({
@@ -32,14 +36,16 @@ export default function RootLayout({
         <CartSidebarProvider>
           <QuickViewProvider>
             <StoreHydration />
+            <CartSessionManager />
             <NewHeader />
             <main className="min-h-screen pt-[120px]">
               {children}
             </main>
-            <Footer />
+            <FooterWrapper />
             
             {/* Global Components */}
             <NotificationToast />
+            <StyleQuizEntryModal />
             <PromoPopup delay={10000} />
             <QuickViewModal />
             <CartSidebar />

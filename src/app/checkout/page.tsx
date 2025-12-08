@@ -9,11 +9,13 @@ import { PaymentMethodType, Order, OrderItem } from '@/types';
 import { FiCreditCard, FiDollarSign, FiTruck } from 'react-icons/fi';
 import { generateInvoicePDF } from '@/utils/invoiceGenerator';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCartStore();
   const { appliedCoupon, calculateDiscount, removeCoupon } = useCouponStore();
+  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -70,10 +72,10 @@ export default function CheckoutPage() {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simular procesamiento de pago
+    // Simular procesamiento de pago (gateway externo, etc.)
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Crear orden
+    // Preparar items para la orden
     const orderItems: OrderItem[] = items.map((item) => ({
       product: item.product,
       quantity: item.quantity,
@@ -81,8 +83,43 @@ export default function CheckoutPage() {
       price: item.product.price + (item.variant?.priceModifier || 0),
     }));
 
+    // Crear orden en el backend (PostgreSQL)
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: orderItems,
+        subtotal: subtotalAfterDiscount,
+        tax,
+        shipping,
+        total,
+        discount,
+        couponCode: appliedCoupon?.code,
+        shippingAddress: {
+          fullName: formData.fullName,
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.postalCode,
+          country: formData.country,
+          phone: formData.phone,
+        },
+      }),
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || !data?.success) {
+      console.error('Order creation error:', data);
+      setIsProcessing(false);
+      toast.error(data?.error || 'Failed to create order');
+      return;
+    }
+
+    const created = data.data as { id: string; orderNumber: string; createdAt: string; total: number };
+
     const order: Order = {
-      id: `ORD-${Date.now()}`,
+      id: created.orderNumber || created.id,
       userId: user?.id || 'guest',
       items: orderItems,
       subtotal: subtotalAfterDiscount,
@@ -114,15 +151,11 @@ export default function CheckoutPage() {
           accountNumber: transferData.accountNumber,
         }),
       },
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: created.createdAt,
+      updatedAt: created.createdAt,
     };
 
-    // Save order to localStorage (in production, this would be an API call)
-    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    localStorage.setItem('orders', JSON.stringify([...existingOrders, order]));
-
-    // Generar factura PDF
+    // Generar factura PDF (usando los datos locales)
     generateInvoicePDF(order);
 
     // Limpiar carrito y cupón
@@ -153,7 +186,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen flex items-center justify-center py-12 bg-gradient-to-br from-amber-50 via-white to-orange-50">
         <div className="max-w-2xl w-full text-center p-8 bg-white rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+            <h1 className="text-3xl font-bold mb-4">{t.cart.empty}</h1>
             <p className="text-gray-600 mb-6">No products in your cart. Add some before proceeding to checkout.</p>
             <div className="flex justify-center gap-4">
               <button
@@ -177,7 +210,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h1 className="text-4xl font-bold text-gray-800 mb-8">Checkout</h1>
+        <h1 className="text-4xl font-bold text-gray-800 mb-8">{t.checkout.title}</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -186,7 +219,7 @@ export default function CheckoutPage() {
               {/* Información de envío */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                  <FiTruck /> Shipping Information
+                  <FiTruck /> {t.checkout.shippingInfo}
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,7 +239,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                      {t.checkout.email} *
                     </label>
                     <input
                       type="email"
@@ -220,7 +253,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
+                      {t.checkout.phone} *
                     </label>
                     <input
                       type="tel"
@@ -234,7 +267,7 @@ export default function CheckoutPage() {
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address *
+                      {t.checkout.address} *
                     </label>
                     <input
                       type="text"
@@ -248,7 +281,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      City *
+                      {t.checkout.city} *
                     </label>
                     <input
                       type="text"
@@ -262,7 +295,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      State *
+                      {t.checkout.state} *
                     </label>
                     <input
                       type="text"
@@ -276,7 +309,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Zip Code 
+                      {t.checkout.postalCode}
                     </label>
                     <input
                       type="text"
@@ -292,7 +325,7 @@ export default function CheckoutPage() {
               {/* Método de pago */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                  <FiDollarSign /> Payment Method
+                  <FiDollarSign /> {t.checkout.paymentMethod}
                 </h2>
 
                 <div className="space-y-4">
@@ -313,8 +346,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethodType)}
                         className="mr-2"
                       />
-                      <FiCreditCard className="inline mr-2" />
-                     Credit/Debit Card
+                      <FiCreditCard className="inline mr-2" /> {t.payment.creditCard}
                     </label>
 
                     <label
@@ -332,7 +364,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethodType)}
                         className="mr-2"
                       />
-                      PayPal
+                      {t.payment.paypal}
                     </label>
 
                     <label
@@ -350,7 +382,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethodType)}
                         className="mr-2"
                       />
-                     Bank Transfer
+                      {t.payment.bankTransfer}
                     </label>
 
                     <label
@@ -368,7 +400,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethodType)}
                         className="mr-2"
                       />
-                     Cash on Delivery
+                      {t.payment.cashOnDelivery}
                     </label>
                   </div>
 
@@ -377,7 +409,7 @@ export default function CheckoutPage() {
                     <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                         Card Number *
+                          Card Number *
                         </label>
                         <input
                           type="text"
@@ -406,7 +438,7 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Expiration Date *
+                            Expiration Date *
                           </label>
                           <input
                             type="text"
@@ -456,7 +488,7 @@ export default function CheckoutPage() {
                   {paymentMethod === 'cash_on_delivery' && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-600">
-                      You will pay in cash when you receive your order. The driver will accept cash or card.
+                        You will pay in cash when you receive your order. The driver will accept cash or card.
                       </p>
                     </div>
                   )}
@@ -467,11 +499,11 @@ export default function CheckoutPage() {
             {/* Resumen del pedido */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">{t.checkout.orderSummary}</h2>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
-                    <span>Subtotal</span>
+                    <span>{t.cart.subtotal}</span>
                     <span>${subtotal.toLocaleString('es-CO')}</span>
                   </div>
                   {discount > 0 && (
@@ -487,16 +519,16 @@ export default function CheckoutPage() {
                     </>
                   )}
                   <div className="flex justify-between text-gray-600">
-                    <span>Shipping</span>
+                    <span>{t.cart.shipping}</span>
                     <span>${shipping.toLocaleString('es-CO')}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
-                    <span>IVA (19%)</span>
+                    <span>{t.cart.tax} (19%)</span>
                     <span>${tax.toLocaleString('es-CO')}</span>
                   </div>
                   <div className="border-t pt-3 mt-3">
                     <div className="flex justify-between text-xl font-bold text-gray-800">
-                      <span>Total</span>
+                      <span>{t.cart.total}</span>
                       <span>${total.toLocaleString('es-CO')}</span>
                     </div>
                   </div>
@@ -511,7 +543,7 @@ export default function CheckoutPage() {
                       : 'bg-amber-600 hover:bg-amber-700'
                   }`}
                 >
-                  {isProcessing ? 'Processing...' : 'Confirm Order'}
+                  {isProcessing ? 'Processing...' : t.checkout.placeOrder}
                 </button>
               </div>
             </div>

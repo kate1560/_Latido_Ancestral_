@@ -3,11 +3,42 @@ import { persist } from 'zustand/middleware';
 
 interface WishlistStore {
   items: string[]; // IDs de productos
-  addItem: (productId: string) => void;
-  removeItem: (productId: string) => void;
-  toggleItem: (productId: string) => void;
+  setItems: (items: string[]) => void;
+  addItem: (productId: string) => Promise<void> | void;
+  removeItem: (productId: string) => Promise<void> | void;
+  toggleItem: (productId: string) => Promise<void> | void;
   isInWishlist: (productId: string) => boolean;
-  clearWishlist: () => void;
+  clearWishlist: () => Promise<void> | void;
+}
+
+async function syncAdd(productId: string) {
+  try {
+    await fetch('/api/wishlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId }),
+    });
+  } catch (e) {
+    console.error('Failed to sync add to wishlist', e);
+  }
+}
+
+async function syncRemove(productId: string) {
+  try {
+    const url = new URL('/api/wishlist', window.location.origin);
+    url.searchParams.set('productId', productId);
+    await fetch(url.toString(), { method: 'DELETE' });
+  } catch (e) {
+    console.error('Failed to sync remove from wishlist', e);
+  }
+}
+
+async function syncClear() {
+  try {
+    await fetch('/api/wishlist', { method: 'PUT' });
+  } catch (e) {
+    console.error('Failed to sync clear wishlist', e);
+  }
 }
 
 export const useWishlistStore = create<WishlistStore>()(
@@ -15,25 +46,35 @@ export const useWishlistStore = create<WishlistStore>()(
     (set, get) => ({
       items: [],
 
-      addItem: (productId) => {
+      setItems: (items) => set({ items }),
+
+      addItem: async (productId) => {
         set((state) => {
           if (state.items.includes(productId)) return state;
           return { items: [...state.items, productId] };
         });
+
+        if (typeof window !== 'undefined') {
+          await syncAdd(productId);
+        }
       },
 
-      removeItem: (productId) => {
+      removeItem: async (productId) => {
         set((state) => ({
           items: state.items.filter((id) => id !== productId),
         }));
+
+        if (typeof window !== 'undefined') {
+          await syncRemove(productId);
+        }
       },
 
-      toggleItem: (productId) => {
+      toggleItem: async (productId) => {
         const { isInWishlist, addItem, removeItem } = get();
         if (isInWishlist(productId)) {
-          removeItem(productId);
+          await removeItem(productId);
         } else {
-          addItem(productId);
+          await addItem(productId);
         }
       },
 
@@ -41,7 +82,12 @@ export const useWishlistStore = create<WishlistStore>()(
         return get().items.includes(productId);
       },
 
-      clearWishlist: () => set({ items: [] }),
+      clearWishlist: async () => {
+        set({ items: [] });
+        if (typeof window !== 'undefined') {
+          await syncClear();
+        }
+      },
     }),
     {
       name: 'wishlist-storage',

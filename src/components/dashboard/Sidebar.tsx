@@ -33,26 +33,26 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  // Admin & Store Manager & Customer
+  // Admin, Vendor & Customer
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
     icon: LayoutDashboard,
-    roles: ['admin', 'store_manager', 'customer']
+    roles: ['admin', 'vendor', 'customer']
   },
-  // Admin & Store Manager
+  // Admin & Vendor
   { 
     name: 'Orders', 
     href: '/dashboard/orders', 
     icon: ShoppingBag, 
     badge: '12',
-    roles: ['admin', 'store_manager']
+    roles: ['admin', 'vendor']
   },
   { 
     name: 'Products', 
     href: '/dashboard/products', 
     icon: Package,
-    roles: ['admin', 'store_manager']
+    roles: ['admin', 'vendor']
   },
   // Admin only
   { 
@@ -61,12 +61,12 @@ const navItems: NavItem[] = [
     icon: Users,
     roles: ['admin']
   },
-  // Admin & Store Manager
+  // Admin & Vendor
   { 
     name: 'Analytics', 
     href: '/dashboard/analytics', 
     icon: BarChart3,
-    roles: ['admin', 'store_manager']
+    roles: ['admin', 'vendor']
   },
   // Admin only
   { 
@@ -79,7 +79,7 @@ const navItems: NavItem[] = [
     name: 'Promotions', 
     href: '/dashboard/promotions', 
     icon: Tag,
-    roles: ['admin', 'store_manager']
+    roles: ['admin', 'vendor']
   },
   { 
     name: 'Reports', 
@@ -92,7 +92,7 @@ const navItems: NavItem[] = [
     name: 'Settings', 
     href: '/dashboard/settings', 
     icon: Settings,
-    roles: ['admin', 'store_manager', 'customer']
+    roles: ['admin', 'vendor', 'customer']
   },
   // Customer only
   { 

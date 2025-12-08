@@ -13,6 +13,7 @@ import ProductBadges from "./ProductBadges";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { ReactNode } from "react";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProductCardProps {
   product: Product;
@@ -59,6 +60,7 @@ export default function ProductCard({
   const { addNotification } = useNotificationStore();
   const { openQuickView } = useQuickView();
   const { openCart } = useCartSidebar();
+  const { t } = useTranslation();
   
   const inWishlist = isInWishlist(product.id);
 
@@ -68,9 +70,9 @@ export default function ProductCard({
     minimumFractionDigits: 0,
   }).format(product.price);
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
-    toggleItem(product.id);
+    await toggleItem(product.id);
     addNotification({
       type: inWishlist ? 'info' : 'success',
       title: inWishlist ? 'Removed from favorites' : 'Added to favorites',
@@ -138,13 +140,13 @@ export default function ProductCard({
           transition-opacity duration-300 z-10
           ${isHovered ? 'opacity-100' : 'opacity-0'}
         `}>
-          <Tooltip text="Add to cart" isActive={activeTooltip === 'cart'}>
+          <Tooltip text={t.common.addToCart} isActive={activeTooltip === 'cart'}>
             <button
               onClick={(e) => { e.stopPropagation(); handleQuickAdd(e); }}
               onMouseEnter={() => setActiveTooltip('cart')}
               onMouseLeave={() => setActiveTooltip(null)}
               className="p-2 sm:p-3 bg-white text-black rounded-full hover:bg-[#8B4513] hover:text-white transition-colors shadow-lg"
-              aria-label="Add to cart"
+              aria-label={t.common.addToCart}
             >
               <FiShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -166,13 +168,13 @@ export default function ProductCard({
             </button>
           </Tooltip>
           
-          <Tooltip text="See details" isActive={activeTooltip === 'details'}>
+          <Tooltip text={t.common.viewDetails} isActive={activeTooltip === 'details'}>
             <Link
               href={`/products/${product.id}`}
               onMouseEnter={() => setActiveTooltip('details')}
               onMouseLeave={() => setActiveTooltip(null)}
               className="p-2 sm:p-3 bg-white text-black rounded-full hover:bg-[#8B4513] hover:text-white transition-colors shadow-lg"
-              aria-label="See details"
+              aria-label={t.common.viewDetails}
             >
               <span className="text-lg font-bold">ⓘ</span>
             </Link>
@@ -244,7 +246,7 @@ export default function ProductCard({
           href={`/products/${product.id}`}
           className="text-xs sm:text-sm w-full text-center block mt-auto py-2 px-3 sm:px-4 rounded font-semibold transition-colors bg-primary text-white hover:bg-primary-dark"
         >
-          See Details
+          {t.common.viewDetails}
         </Link>
       </div>
     </div>

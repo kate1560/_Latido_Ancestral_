@@ -33,24 +33,33 @@ export default function LanguageSwitcher() {
   };
 
   if (!isMounted) {
-    return <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium"><span>🌐</span></button>;
+    return (
+      <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#8B4513] bg-white/90 rounded-lg border border-[#8B4513]/30">
+        <span>🌐</span>
+      </button>
+    );
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[120]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white text-white border border-transparent hover:bg-white/90 transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/95 text-[#8B4513] border border-[#8B4513]/40 hover:bg-white transition-colors text-sm font-medium shadow-sm"
       >
         <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="hidden sm:inline text-[#8B4513]">{currentLanguage.name}</span>
-        <svg className={`w-4 h-4 transition-transform text-[#8B4513] ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        <span className="hidden sm:inline">{currentLanguage.name}</span>
+        <svg
+          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-300 rounded-lg shadow-2xl z-[9999]">
+        <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-300 rounded-lg shadow-2xl z-[130]">
           {languages.map((lang) => (
             <button
               key={lang.code}
