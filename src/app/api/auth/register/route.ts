@@ -37,34 +37,30 @@ export async function POST(request: NextRequest) {
     // Supabase Auth, pero mantenemos este campo por compatibilidad.
     const passwordHash = await hashPassword(password);
 
-    // Crear el usuario en Supabase Auth (email/password)
-    const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
+   // Crear el usuario en Supabase Auth (email/password) usando el flujo correcto
+const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  email,
+  password,
+});
 
-    if (signUpError || !signUpData.user) {
-      // Si el proveedor indica que el email ya existe, devolvemos 409 de forma clara.
-      const code = (signUpError as any)?.code;
-      const status = (signUpError as any)?.status;
+if (signUpError || !signUpData.user) {
+  if ((signUpError as any)?.message?.toLowerCase().includes('already')) {
+    return NextResponse.json(
+      { message: 'This email is already registered. Please sign in instead.' },
+      { status: 409 },
+    );
+  }
 
-      if (code === 'email_exists' || status === 422) {
-        return NextResponse.json(
-          { message: 'This email is already registered. Please sign in instead.' },
-          { status: 409 },
-        );
-      }
+  console.error('Supabase signUp error:', signUpError);
+  return NextResponse.json(
+    { message: 'Failed to create account in auth provider' },
+    { status: 500 },
+  );
+}
 
-      console.error('Supabase signUp error:', signUpError);
-      return NextResponse.json(
-        { message: 'Failed to create account in auth provider' },
-        { status: 500 },
-      );
-    }
+const authUser = signUpData.user;
+const userId = authUser.id;
 
-    const authUser = signUpData.user;
-    const userId = authUser.id as string;
 
     // Insertar fila correspondiente en nuestra tabla usuarios usando el mismo UUID
     const insertResult = await supabase
