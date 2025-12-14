@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { setAuthCookie, hashPassword } from '@/lib/auth';
-import { createSupabaseServiceClient } from '@/lib/supabaseClient';
+import {
+  createSupabaseServiceClient,
+  createSupabaseAnonClient,
+} from '@/lib/supabaseClient';
+
 import { findUserByEmailForAuth, findUserByIdForAuth } from '@/lib/repositories/userRepository';
 
 export async function POST(request: NextRequest) {
@@ -30,7 +34,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseServiceClient();
+    const supabaseAuth = createSupabaseAnonClient();     // AUTH (signup/login)
+    const supabaseService = createSupabaseServiceClient(); // DB (insert usuarios)
+
 
     // Creamos también un hash local de la contraseña para cumplir con el NOT NULL
     // de la columna password_hash en la tabla usuarios. La verificación real la hace
@@ -38,10 +44,9 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashPassword(password);
 
    // Crear el usuario en Supabase Auth (email/password) usando el flujo correcto
-const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-  email,
-  password,
-});
+const { data: signUpData, error: signUpError } =
+  await supabaseAuth.auth.signUp({ email, password });
+
 
 if (signUpError || !signUpData.user) {
   if ((signUpError as any)?.message?.toLowerCase().includes('already')) {
@@ -63,7 +68,7 @@ const userId = authUser.id;
 
 
     // Insertar fila correspondiente en nuestra tabla usuarios usando el mismo UUID
-    const insertResult = await supabase
+    const insertResult = await supabaseService
       .from('usuarios')
       .insert({
         id: userId,
@@ -75,7 +80,6 @@ const userId = authUser.id;
         role: 'customer',
         is_active: true,
         status: 'active',
-        email_verified: true,
       })
       .select('*')
       .single();
