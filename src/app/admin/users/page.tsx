@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSearch } from 'react-icons/fa';
 import { useNotificationStore } from '@/store/notificationStore';
-const isLoading = false;
+
 
 interface User {
   id: number;
@@ -43,6 +43,7 @@ const MOCK_USERS: User[] = [
 ];
 
 export default function UsersPage() {
+  const isLoading = false;
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [searchTerm, setSearchTerm] = useState('');
   const { addNotification } = useNotificationStore();
