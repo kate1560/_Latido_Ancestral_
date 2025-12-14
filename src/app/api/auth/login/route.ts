@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { setAuthCookie } from '@/lib/auth';
-import { createSupabaseAnonClient } from '@/lib/supabaseClient';
+import {
+  createSupabaseAnonClient,
+  createSupabaseServiceClient,
+} from '@/lib/supabaseClient';
 import { findUserByIdForAuth } from '@/lib/repositories/userRepository';
 
 export async function POST(request: NextRequest) {
@@ -14,13 +17,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseAnonClient();
+    /* --------------------------------------------------
+       1) LOGIN CONTRA SUPABASE AUTH (ANON CLIENT)
+    -------------------------------------------------- */
+    const supabaseAuth = createSupabaseAnonClient();
 
-    // Verificar credenciales contra Supabase Auth
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: signInData, error: signInError } =
+      await supabaseAuth.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (signInError || !signInData.user) {
       return NextResponse.json(
@@ -30,18 +36,51 @@ export async function POST(request: NextRequest) {
     }
 
     const authUser = signInData.user;
-    const userId = authUser.id as string;
+    const userId = authUser.id;
 
-    // Buscar el perfil en nuestra tabla usuarios usando el mismo UUID
-    const user = await findUserByIdForAuth(userId);
+    /* --------------------------------------------------
+       2) BUSCAR PERFIL EN TABLA `usuarios`
+          (SI NO EXISTE, CREARLO)
+    -------------------------------------------------- */
+    let user = await findUserByIdForAuth(userId);
 
     if (!user) {
-      return NextResponse.json(
-        { message: 'User profile not found' },
-        { status: 404 },
-      );
+      const supabaseService = createSupabaseServiceClient();
+
+      const { error: insertError } = await supabaseService
+        .from('usuarios')
+        .insert({
+          id: userId,
+          email: authUser.email,
+          first_name: '',
+          last_name: '',
+          role: 'customer',
+          is_active: true,
+          status: 'active',
+        });
+
+      if (insertError) {
+        console.error('Error creating user profile on login:', insertError);
+        return NextResponse.json(
+          { message: 'Failed to initialize user profile' },
+          { status: 500 },
+        );
+      }
+
+      // Volver a buscar el perfil recién creado
+      user = await findUserByIdForAuth(userId);
+
+      if (!user) {
+        return NextResponse.json(
+          { message: 'User profile could not be loaded' },
+          { status: 500 },
+        );
+      }
     }
 
+    /* --------------------------------------------------
+       3) VALIDACIONES DE NEGOCIO
+    -------------------------------------------------- */
     if (!user.is_active) {
       return NextResponse.json(
         { message: 'Account inactive' },
@@ -49,6 +88,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    /* --------------------------------------------------
+       4) RESPUESTA + COOKIE PROPIA
+    -------------------------------------------------- */
     const response = NextResponse.json({
       success: true,
       user: {
@@ -56,13 +98,12 @@ export async function POST(request: NextRequest) {
         email: user.email,
         firstName: user.first_name,
         lastName: user.last_name,
-        name: `${user.first_name} ${user.last_name}`,
+        name: `${user.first_name} ${user.last_name}`.trim(),
         role: user.role,
       },
       message: 'Login successful',
     });
 
-    // Seguimos emitiendo el auth_token propio para compatibilidad con guards actuales
     setAuthCookie(response, {
       sub: user.id,
       email: user.email,
