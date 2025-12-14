@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { setAuthCookie } from '@/lib/auth';
-import { createSupabaseServiceClient } from '@/lib/supabaseClient';
+import { createSupabaseAnonClient } from '@/lib/supabaseClient';
 import { findUserByIdForAuth } from '@/lib/repositories/userRepository';
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseServiceClient();
+    const supabase = createSupabaseAnonClient();
 
     // Verificar credenciales contra Supabase Auth
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
